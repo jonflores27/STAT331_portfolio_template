@@ -44,7 +44,7 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 ```{r}
 #| label: wd-1-xlsx
 
-#
+# nothing right now
 
 ```
 
@@ -55,12 +55,70 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 ```{r}
 #| label: wd-2-ex-1
 
+#Lab 3 Question 5
+#Select cols
+teacher_evals_clean <- evaluations |> 
+  select(course_id, teacher_id, question_no, no_participants, resp_share,
+         SET_score_avg, percent_failed_cur, academic_degree,
+         seniority, gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+         ))
+
+
 ```
 
 -   Example removing specified columns
 
 ```{r}
 #| label: wd-2-ex-2
+
+#Challange 4, Open Ended Analysis, Table creation
+#Selected everything except one columns so I deleted that column
+
+#| fig-cap: "Mean price of childcare base on type in 2018"
+
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+  pivot_longer(cols = c(center_based_infant,
+                        center_based_toddler,
+                        center_based_preschool,
+                        family_based_infant,
+                        family_based_toddler,
+                        family_based_preschool), 
+               names_to = "costs") |>
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center = center_care,
+                          family = home_care)) |> 
+  
+  select(!costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`) |> 
+  arrange(desc(center)) |> 
+    rename(`Mean Cost of Center Based Childcare` = center,
+           `Mean Cost of Family Based Childcare` = family)
 
 ```
 
@@ -77,6 +135,20 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 
 ```{r}
 #| label: wd-3-numeric-ex-1
+
+#Lab 3 Question 5
+#Filtering rows, in this case with an inequality
+teacher_evals_clean <- evaluations |> 
+  select(course_id, teacher_id, question_no, no_participants, resp_share,
+         SET_score_avg, percent_failed_cur, academic_degree,
+         seniority, gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+         ))
 
 ```
 
@@ -98,6 +170,16 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 
 ```{r}
 #| label: wd-3-string
+
+#Lab 5, Murder mystery
+person |> 
+  filter(str_detect(name, pattern = "^Annabel") &
+           address_street_name == "Franklin Ave"|
+           address_street_name == "Northwestern Dr" &
+           address_number == max(address_number)) |> 
+  left_join(interview, by = join_by(id == person_id)) |> 
+  select(name, address_number, address_street_name, transcript)
+
 
 ```
 
