@@ -79,6 +79,7 @@ teacher_evals_clean <- evaluations |>
 
 #Challange 4, Open Ended Analysis, Table creation
 #Selected everything except one columns so I deleted that column
+#revised changed from ! to - sign
 
 #| fig-cap: "Mean price of childcare base on type in 2018"
 
@@ -111,7 +112,7 @@ ca_cc_table |>
                           center = center_care,
                           family = home_care)) |> 
   
-  select(!costs) |> 
+  select(-costs) |> 
   group_by(`California Region`, childcare_type) |> 
   summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
   pivot_wider(names_from = childcare_type, 
@@ -163,6 +164,15 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: wd-3-character
+
+#Lab 5, Murder mystery
+person |> 
+  filter(str_detect(name, pattern = "^Annabel") &
+           address_street_name == "Franklin Ave"|
+           address_street_name == "Northwestern Dr" &
+           address_number == max(address_number)) |> 
+  left_join(interview, by = join_by(id == person_id)) |> 
+  select(name, address_number, address_street_name, transcript)
 
 ```
 
@@ -609,6 +619,36 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: pe-4-2
 
+# Lab 4 Question 7
+ca_childcare |> 
+  select(region, county_name, study_year,
+         Infant = mc_infant,
+         Toddler = mc_toddler,
+         Preschool = mc_preschool) |> 
+  pivot_longer(cols = c(Infant, Toddler, Preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+
+  ggplot(mapping = aes(
+    x = study_year, y = median_cc_price,
+    color = region )) +
+  geom_point(size = .8) +
+  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
+  facet_wrap(~ age_group) +
+  
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region",
+       x = "Study Year", y = "") +
+  theme_bw() +
+  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
+        axis.text.x = element_text(size = 7)
+         )
+
 ```
 
 ## Data Simulation & Statisical Models
@@ -635,6 +675,11 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dsm-2-1
+
+#Challenge 3 Question 3
+#Chi squared test
+chisq.test(x = teacher_evals_compare$SET_level,
+           y = teacher_evals_compare$sen_level)
 
 ```
 
