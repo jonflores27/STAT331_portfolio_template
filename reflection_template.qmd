@@ -23,6 +23,8 @@ execute:
 ```{r}
 #| label: wd-1-csv-1
 
+#Lab 3 Question 2
+evaluations <- read_csv(file = here::here("Week3", "Lab3", "teacher_evals.csv"))
 ```
 
 -   `csv` Example 2
@@ -30,12 +32,19 @@ execute:
 ```{r}
 #| label: wd-1-csv-2
 
+#Lab 2 Question 1
+#Revised, previously did not have here::here components
+surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
+
+
 ```
 
 -   `xlsx`
 
 ```{r}
 #| label: wd-1-xlsx
+
+#
 
 ```
 
