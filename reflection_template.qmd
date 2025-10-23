@@ -77,9 +77,9 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: wd-2-ex-2
 
-#Challange 4, Open Ended Analysis, Table creation
-#Selected everything except one columns so I deleted that column
-#revised changed from ! to - sign
+# Challenge 4, Open Ended Analysis, Table creation
+# Deleted the only column I did not need
+# revised changed from ! to - sign
 
 #| fig-cap: "Mean price of childcare base on type in 2018"
 
@@ -137,8 +137,8 @@ ca_cc_table |>
 ```{r}
 #| label: wd-3-numeric-ex-1
 
-#Lab 3 Question 5
-#Filtering rows, in this case with an inequality
+# Lab 3 Question 5
+# Filtering rows, in this case with an inequality
 teacher_evals_clean <- evaluations |> 
   select(course_id, teacher_id, question_no, no_participants, resp_share,
          SET_score_avg, percent_failed_cur, academic_degree,
@@ -156,7 +156,7 @@ teacher_evals_clean <- evaluations |>
 -   Numeric Example 2
 
 ```{r}
-#| label: wd-3-numeric-ex-1
+#| label: wd-3-numeric-ex-2
 
 ```
 
@@ -165,14 +165,18 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: wd-3-character
 
-#Lab 5, Murder mystery
-person |> 
-  filter(str_detect(name, pattern = "^Annabel") &
-           address_street_name == "Franklin Ave"|
-           address_street_name == "Northwestern Dr" &
-           address_number == max(address_number)) |> 
-  left_join(interview, by = join_by(id == person_id)) |> 
-  select(name, address_number, address_street_name, transcript)
+# Lab 5, Murder mystery
+# In this case I used a regular experssion "^" to make sure that the pattern that was foound started with the provide clue
+
+get_fit_now_member |> 
+  left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
+  left_join(interview, by = join_by(person_id)) |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  filter(check_in_date == "2018-01-09",
+         str_detect(id, pattern = "^48Z"),
+         membership_status == "gold") |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  select(id, name, membership_status, check_in_date, transcript)
 
 ```
 
@@ -182,6 +186,7 @@ person |>
 #| label: wd-3-string
 
 #Lab 5, Murder mystery
+# made sure that the pattern started with Annabel to account for Annabels with differetn last name
 person |> 
   filter(str_detect(name, pattern = "^Annabel") &
            address_street_name == "Franklin Ave"|
@@ -197,6 +202,19 @@ person |>
 
 ```{r}
 #| label: wd-3-date
+# Lab 5 Murder Mystery
+# revised to create a date column, it makes it easier to filter for dates
+
+#| label: following other lead
+get_fit_now_member |> 
+  left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
+  left_join(interview, by = join_by(person_id)) |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  filter(check_in_date == "2018-01-09",
+         str_detect(id, pattern = "^48Z"),
+         membership_status == "gold") |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  select(id, name, membership_status, check_in_date, transcript)
 
 ```
 
@@ -298,6 +316,12 @@ ca_childcare |>
 ```{r}
 #| label: wd-5-left-ex-1
 
+#Lab 4 Question 3
+ca_childcare <- ca_childcare |> 
+  left_join(y = tax_rev,
+            by = join_by(county_name == entity_name, study_year == year))
+
+
 ```
 
 -   `right_join()` Example 1
@@ -312,6 +336,16 @@ ca_childcare |>
 ```{r}
 #| label: wd-5-left-right-ex-2
 
+#Lab 5, Murder mystery
+person |> 
+  filter(str_detect(name, pattern = "^Annabel") &
+           address_street_name == "Franklin Ave"|
+           address_street_name == "Northwestern Dr" &
+           address_number == max(address_number)) |> 
+  left_join(interview, by = join_by(id == person_id)) |> 
+  select(name, address_number, address_street_name, transcript)
+
+
 ```
 
 -   `inner_join()` Example 1
@@ -319,12 +353,40 @@ ca_childcare |>
 ```{r}
 #| label: wd-5-inner-ex-1
 
+# Lab 5 Murder Mystery
+#Revised to include an inner join.
+# The inner join was used to make sure that all the rows in selected existed in both datasets, this way the resultig dataset had no nulls
+
+#| label: following other lead
+get_fit_now_member |> 
+  inner_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
+  left_join(interview, by = join_by(person_id)) |> 
+  filter(check_in_date == 20180109,
+         str_detect(id, pattern = "^48Z"),
+         membership_status == "gold") |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  select(id, name, membership_status, check_in_date, transcript)
+
 ```
 
 -   `inner_join()` Example 2
 
 ```{r}
 #| label: wd-5-inner-ex-2
+
+#lab 5 Murder Mystery
+#revised to include an inner join
+# In this case the inner joins helps because the resulting data frame only has people who exist in the previously joined data frames and in the facebook event check in.
+
+person |> 
+  left_join(interview, by = join_by(id == person_id)) |> 
+  left_join(drivers_license, by = join_by(license_id == id)) |> 
+  inner_join(facebook_event_checkin, by = join_by(id == person_id)) |> 
+  filter(car_make == "Tesla", car_model == "Model S",
+         gender == "female", event_name == "SQL Symphony Concert") |> 
+  mutate(date = ymd(date)) |> 
+  select(name, gender, height, age, hair_color, car_make,
+         car_model, event_name, date, transcript)
 
 ```
 
