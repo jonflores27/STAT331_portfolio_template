@@ -207,6 +207,21 @@ person |>
 ```{r}
 #| label: wd-4-numeric-ex-1
 
+#Lab 3 Question 5
+# mutating teacher id from the numeric format into the character format because it fits the context better
+
+teacher_evals_clean <- evaluations |> 
+  select(course_id, teacher_id, question_no, no_participants, resp_share,
+         SET_score_avg, percent_failed_cur, academic_degree,
+         seniority, gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+
+
 ```
 
 -   Numeric Example 2
@@ -227,6 +242,38 @@ person |>
 
 ```{r}
 #| label: wd-4-factor-ex-2
+
+# Lab 4 Question 7
+# originally the facets were in alphbetical order. I wanted a specific order so I created factors to reorder the levels of the facets.
+ca_childcare |> 
+  select(region, county_name, study_year,
+         Infant = mc_infant,
+         Toddler = mc_toddler,
+         Preschool = mc_preschool) |> 
+  pivot_longer(cols = c(Infant, Toddler, Preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+
+  ggplot(mapping = aes(
+    x = study_year, y = median_cc_price,
+    color = region )) +
+  geom_point(size = .8) +
+  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
+  facet_wrap(~ age_group) +
+  
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region",
+       x = "Study Year", y = "") +
+  theme_bw() +
+  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
+        axis.text.x = element_text(size = 7)
+         )
+
 
 ```
 
@@ -303,6 +350,22 @@ person |>
 
 ```{r}
 #| label: wd-7-long
+# Lab 4 Question 7
+
+
+ca_childcare |> 
+  select(region, county_name, study_year,
+         Infant = mc_infant,
+         Toddler = mc_toddler,
+         Preschool = mc_preschool) |> 
+  pivot_longer(cols = c(Infant, Toddler, Preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+
 
 ```
 
