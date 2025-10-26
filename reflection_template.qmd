@@ -8,6 +8,7 @@ editor: visual
 execute: 
   eval: false
   echo: true
+code-tools: true
 ---
 
 [**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B .
@@ -34,6 +35,9 @@ evaluations <- read_csv(file = here::here("Week3", "Lab3", "teacher_evals.csv"))
 
 #Lab 2 Question 1
 #Revised, previously did not have here::here components
+# Revision Comments For this course, you are expected to use the here()
+# function from the here package to load in your data.
+# If you're not sure how this works, I'd encourage you to look over this coursework page:
 surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 
 
@@ -201,7 +205,9 @@ get_fit_now_member |>
 #| label: wd-3-string
 
 #Lab 5, Murder mystery
-# made sure that the pattern started with Annabel to account for Annabels with different last name
+# made sure that the pattern started with Annabel to account for Annabels
+# with different last names
+
 person |> 
   filter(str_detect(name, pattern = "^Annabel") &
            address_street_name == "Franklin Ave"|
@@ -241,7 +247,8 @@ get_fit_now_member |>
 #| label: wd-4-numeric-ex-1
 
 #Lab 3 Question 5
-# mutating teacher id from the numeric format into the character format because it fits the context better
+# mutating teacher id from the numeric format into the character format
+# because it fits the context better
 
 teacher_evals_clean <- evaluations |> 
   select(course_id, teacher_id, question_no, no_participants, resp_share,
@@ -316,7 +323,8 @@ ca_cc_table |>
 #| label: wd-4-factor-ex-2
 
 # Lab 4 Question 7
-# originally the facets were in alphbetical order. I wanted a specific order so I created factors to reorder the levels of the facets.
+# originally the facets were in alphbetical order.
+# I wanted a specific order so I created factors to reorder the levels of the facets.
 ca_childcare |> 
   select(region, county_name, study_year,
          Infant = mc_infant,
@@ -414,7 +422,8 @@ ca_childcare <- ca_childcare |>
 
 # Challenge 5
 # revised to make a right join
-# good idea as this gives the resulting data set only entries that exist in the interview data base which is what we care about here
+# good idea as this gives the resulting data set only entries
+# that exist in the interview data base which is what we care about here
 person |> 
   right_join(interview, by = join_by(id == person_id)) |> 
   left_join(get_fit_now_member, by = join_by(id == person_id)) |> 
@@ -449,7 +458,8 @@ person |>
 
 # Lab 5 Murder Mystery
 #Revised to include an inner join.
-# The inner join was used to make sure that all the rows in selected existed in both data sets, this way the resulting data set had no nulls
+# The inner join was used to make sure that all the rows in result
+# existed in both data sets, this way the resulting data set had no nulls
 
 #| label: following other lead
 get_fit_now_member |> 
@@ -470,7 +480,9 @@ get_fit_now_member |>
 
 #lab 5 Murder Mystery
 #revised to include an inner join
-# In this case the inner joins helps because the resulting data frame only has people who exist in the previously joined data frames and in the facebook event check in.
+# In this case the inner joins helps because the resulting data frame only
+#has people who exist in the previously joined data frames
+# and in the facebook event check in.
 
 person |> 
   left_join(interview, by = join_by(id == person_id)) |> 
@@ -634,9 +646,16 @@ ggplot(data = surveys,
 #| label: r-2-2
 
 # Lab 3 Question 5
+# Revise my new line creation strategy here. I took peer feedback
+# "The only feedback I have (which is a bit nitpicky)
+# is that you put newlines on commas somewhat inconsistently". 
+# I made it so 2 col names per row was consistent, I think that's clear
+# and uncluttered
 teacher_evals_clean <- evaluations |> 
-  select(course_id, teacher_id, question_no, no_participants, resp_share,
-         SET_score_avg, percent_failed_cur, academic_degree,
+  select(course_id, teacher_id,
+         question_no, no_participants,
+         resp_share, SET_score_avg,
+         percent_failed_cur, academic_degree,
          seniority, gender) |> 
   rename(sex = gender) |> 
   filter(no_participants > 9) |> 
@@ -653,7 +672,7 @@ teacher_evals_clean <- evaluations |>
 #| label: r-2-3
 
 # Challenge 2
-# labs and theme functiona
+# labs and theme functions hav multiple arguments
 ggplot(data = surveys,
     mapping = aes(x = weight, y = species)) +
   geom_boxplot(outliers = FALSE) +
@@ -749,8 +768,14 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-1-num
 
-
-
+# Lab 4 Question 8
+ca_childcare |> 
+  ggplot(mapping = aes(y = mc_infant, x = mhi_2018)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(y = "Median Weekly Price for Childcare ($) - Infant",
+       x = "Median Household Income 2018 ($)") 
 ```
 
 -   At least one numeric variable and one categorical variable
@@ -1014,6 +1039,7 @@ ca_childcare |>
 ```{r}
 #| label: dvs-3-2
 
+# Lab 3 Question 7
 #| layout-ncol: 2
 #| layout-align: center
 #| fig-cap: 
@@ -1293,7 +1319,7 @@ ca_cc_table |>
 #| label: pe-1-one-call
 
 # Lab 5 
-# Revised formattin for clearer code
+# Revised formatting for clearer code
 get_fit_now_member |> 
   left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
   left_join(interview, by = join_by(person_id)) |> 
@@ -1546,7 +1572,7 @@ Through my time as a student in this class I have been able to revise my thinkin
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
-Comments were provided on each stating what i revised and why I revised it to meet the portfolio expectations.
+Comments were provided on each cell with revisions. I stated what i revised and why I revised it to meet the portfolio expectations.
 
 ## Extending My Thinking
 
