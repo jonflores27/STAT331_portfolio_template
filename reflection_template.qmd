@@ -1621,20 +1621,28 @@ summary(reg_mod1)
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
-Through my time as a student in this class I have been able to revise my thinking after getting feedback. In many of the labs the feedback helped me improve the clarity and efficiency of my code. One example that I remember is learning about more efficient ways of writing functions. Instead of using a lengthy collection of or statements one can make a c() and use the %in% operator to achieve the same goal. I took what I learned from this and many other feedback comments and used it to work on my future assignments. I learned from my mistakes and when I committed new ones I turned in revisions and learned from those as well.
+Through my time as a student in this class I have been able to revise my thinking after getting feedback. In many of the labs the feedback helped me improve the clarity and efficiency of my code. One example that I remember is learning about more efficient ways of writing functions. Instead of using a lengthy collection of or statements one can make a c() and use the %in% operator to achieve the same goal. I took what I learned from this and many other feedback comments and used it to work on my future assignments. I learned from my mistakes and when I committed new ones I turned in revisions and learned from those as well. Overall I think revisions really helped me learn because fixing mistakes is easier that not making them and once you fix one it is easier to recognize them in the future.
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
-Comments were provided on each cell with revisions. I stated what i revised and why I revised it to meet the portfolio expectations.
+Comments were provided on each cell with revisions. I stated what I revised and why I revised it to meet the portfolio expectations. Any feedback that inspired my revisions was also included.
 
 ## Extending My Thinking
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
-I extended my thinking by taking
+I extended my thinking by taking what we leaned in class and expanding on that. One example that I like of this in my portfolio is the challenge 2. In class there were a few slide on themes but I looked through the documentation and used many other arguments that I think would be helpful in the context I as working it. A lot of the arguments I used, like removing grid lines along an axis were not covered in class but by exploring the documentation I was able to learn them and I did use some of those themes in future labs to increase clarity.
 
 ## Peer Support & Collaboration
 
 <!-- Include an image or a description of feedback you gave that you are proud of (either in a peer review or in Discord). -->
 
+During the peer reviews I made sure to address what I though the student did well and then provide a little feedback on point of improvement that saw while admiring the good work. An example of a feedback that I would give is:
+
+"I like how you formatted your code in a way that each pipe and + sign was the end of a line. I think you also did a good job with the commas, making sure that no line got too long. One improvement I can think of would be being more diligent when using named arguments inside of functions. An example would be using pattern =, inside of the str_detect function. Just for clarity. I think you did a great job."
+
+Week 5 feedback
+
 <!-- Include a description of how you grew as a collaborator through the weekly pair programming activities.   -->
+
+During the group activities I always tried my best to be a good collaborator to my partner. I made sure to stick to my role and made an effort to do a good job at it. If as the coder, I ever got stuck, I made sure to think out loud and try to find the point of confusion. As the computer I supported my partner by asking about the end goal of what we were trying to do. I asked if there was anything missing and if there were any functions that would be helpful to our work. Communication was important not just during the class but also outside if we did not manage to finish in the provided time. On one of the activities we finished late and did not submit during class but my partner reached out via email and through that we were able to coordinate and make sure that everything was done on time.
