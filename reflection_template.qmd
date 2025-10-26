@@ -10,7 +10,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B .
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -544,7 +544,6 @@ ca_cc_table |>
               names_prefix = "mean_cost_") |> 
   
   arrange(desc(mean_cost_center))
-
 ```
 
 -   `pivot_wider()`
@@ -796,11 +795,6 @@ individuals |>
       geom_text(aes(label = n), vjust = -0.5) +
       labs(x = "Academic Degree Held", y = "Count")
 
-individuals |> 
-  filter(academic_degree == "prof") |> 
-  group_by(seniority) |> 
-  summarise(n = n())  
-
 
 ```
 
@@ -808,6 +802,33 @@ individuals |>
 
 ```{r}
 #| label: dvs-2-cat
+
+# Challenge 4
+# Year and Types of childcare
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = - c(`California Region`, study_year), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+  
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
 
 ```
 
@@ -1130,6 +1151,47 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: dvs-6-ex-1
 
+# Challenge 4 
+# revised: added _childcare to make to add context to the column names
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+
+  pivot_longer(cols = - `California Region`, 
+               names_to = "costs") |>
+  
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center_childcare = center_care,
+                          family_childcare = home_care)) |> 
+
+  select(- costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
+  
+  arrange(
+    desc(mean_cost_center_childcare)
+    )
+
 ```
 
 -   I can modify the text in my table to be more readable (e.g., bold face for column headers)
@@ -1143,6 +1205,26 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: dvs-6-ex-3
+
+# Lab 4 Question 4
+# column made more sense to be placed before the state name
+
+ca_childcare <- ca_childcare |> 
+  mutate(county_name = str_remove_all(county_name, " County"),
+         county_name = as_factor(county_name),
+         study_year = as.integer(study_year),
+    `California Region` = fct_collapse(.f = county_name,
+                          `Superior` = superior_counties,
+                          `North Coast` = north_coast_counties,
+                          `San Francisco` = san_fran_counties,
+                          `North San Joaquin` = n_san_joaquin_counties,
+                          `Central Coast` = central_coast_counties,
+                          `Sounth San Joaquin` = s_san_joaquin_counties,
+                          `Inland Empire` = inland_counties,
+                          `Los Angeles` = la_county,
+                          `Orange` = orange_county,
+                          `San Diego-Imperial` = san_diego_imperial_counties
+                          ), .before = state_name)
 
 ```
 
@@ -1159,6 +1241,45 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: dvs-7-ex-2
+
+# Challenge 4
+# Pivoted after creating a long df
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+
+  pivot_longer(cols = - `California Region`, 
+               names_to = "costs") |>
+  
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center_childcare = center_care,
+                          family_childcare = home_care)) |> 
+
+  select(- costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
+  
+  arrange(desc(mean_cost_center_childcare))
 
 ```
 
@@ -1178,6 +1299,25 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: pe-1-across
 
+#Lab 3 Question 5
+teacher_evals_clean <- evaluations |> 
+  select(course_id,
+         teacher_id,
+         question_no,
+         no_participants,
+         resp_share,
+         SET_score_avg,
+         percent_failed_cur,
+         academic_degree,
+         seniority,
+         gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+         ))
 ```
 
 -   using functions from the `map()` family
@@ -1216,6 +1356,26 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: pe-3-across
+
+#Lab 3 Question 5
+teacher_evals_clean <- evaluations |> 
+  select(course_id,
+         teacher_id,
+         question_no,
+         no_participants,
+         resp_share,
+         SET_score_avg,
+         percent_failed_cur,
+         academic_degree,
+         seniority,
+         gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+         ))
 
 ```
 
@@ -1358,11 +1518,17 @@ chisq.test(x = teacher_evals_compare$SET_level,
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
+Through my time as a student in this class I have been able to revise my thinking after getting feedback. In many of the labs the feedback helped me improve the clarity and efficiency of my code. One example that I remember is learning about more efficient ways of writing functions. Instead of using a lengthy collection of or statements one can make a c() and use the %in% operator to achieve the same goal. I took what I learned from this and many other feedback comments and used it to work on my future assignments. I learned from my mistakes and when I committed new ones I turned in revisions and learned from those as well.
+
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
+
+Comments were provided on each stating what i revised and why I revised it to meet the portfolio expectations.
 
 ## Extending My Thinking
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
+
+I extended my thinking by taking
 
 ## Peer Support & Collaboration
 
