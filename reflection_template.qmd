@@ -260,6 +260,7 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: wd-4-factor-ex-1
 
+# Challenge 4 
 home_care <- c("family_based_infant",
                "family_based_toddler",
                "family_based_preschool")
@@ -399,7 +400,7 @@ person |>
 
 # Lab 5 Murder Mystery
 #Revised to include an inner join.
-# The inner join was used to make sure that all the rows in selected existed in both datasets, this way the resultig dataset had no nulls
+# The inner join was used to make sure that all the rows in selected existed in both data sets, this way the resulting data set had no nulls
 
 #| label: following other lead
 get_fit_now_member |> 
@@ -496,7 +497,6 @@ ca_cc_table |>
 #| label: wd-7-wide
 
 #Challenge 4 Open ended analysis
-
 home_care <- c("family_based_infant",
                "family_based_toddler",
                "family_based_preschool")
@@ -504,6 +504,7 @@ home_care <- c("family_based_infant",
 center_care <- c("center_based_infant",
                  "center_based_toddler",
                  "center_based_preschool")
+
 
 ca_cc_table |>
   filter( study_year == 2018) |> 
@@ -515,25 +516,24 @@ ca_cc_table |>
             center_based_preschool = median(mc_preschool),
             family_based_preschool = median(mfcc_preschool),
             .groups = "drop"  ) |> 
-  pivot_longer(cols = c(center_based_infant,
-                        center_based_toddler,
-                        center_based_preschool,
-                        family_based_infant,
-                        family_based_toddler,
-                        family_based_preschool), 
+
+  pivot_longer(cols = - `California Region`, 
                names_to = "costs") |>
+  
   mutate(childcare_type = fct_collapse(.f = costs,
                           center = center_care,
                           family = home_care)) |> 
-  
-  select(-costs) |> 
+
+  select(- costs) |> 
   group_by(`California Region`, childcare_type) |> 
   summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
   pivot_wider(names_from = childcare_type, 
               values_from = `Mean Cost of Childcare`) |> 
+  
   arrange(desc(center)) |> 
-    rename(`Mean Cost of Center Based Childcare` = center,
-           `Mean Cost of Family Based Childcare` = family)
+    rename(`Mean Cost: Center Care` = center,
+           `Mean Cost: Family Care` = family)
 
 ```
 
@@ -555,6 +555,38 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-1
+
+
+# Lab 4 Question 7
+
+
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
+                          `Center Based Preschool`, `Family Based Infant`,
+                          `Family Based Toddler`,
+                          `Family Based Preschool`), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
 
 ```
 
@@ -627,6 +659,22 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: dvs-2-ex-1
 
+# Challenge 2 
+ggplot(data = surveys,
+    mapping = aes(x = weight, y = species)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Horizontal Orientation",
+       x = "Weight (g)", y = "Species Name") +
+  theme_bw() +
+  theme(panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        axis.ticks.y = element_line(color = "white"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+
 ```
 
 -   I can modify my colors to be accessible to anyone's eyes
@@ -641,6 +689,35 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: dvs-2-ex-3
 
+# Challenge 4
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
+                          `Center Based Preschool`, `Family Based Infant`,
+                          `Family Based Toddler`,
+                          `Family Based Preschool`), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+  
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
+
 ```
 
 -   I can modify the text in my plot to be more readable
@@ -648,12 +725,58 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: dvs-2-ex-4
 
+# Challenge 2 
+ggplot(data = surveys,
+    mapping = aes(x = weight, y = species)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Horizontal Orientation",
+       x = "Weight (g)", y = "Species Name") +
+  theme_bw() +
+  theme(panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        axis.ticks.y = element_line(color = "white"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+
 ```
 
 -   I can reorder my legend to align with the colors in my plot
 
 ```{r}
 #| label: dvs-2-ex-5
+
+# Lab 4 Question 7
+ca_childcare |> 
+  select(region, county_name, study_year,
+         Infant = mc_infant,
+         Toddler = mc_toddler,
+         Preschool = mc_preschool) |> 
+  pivot_longer(cols = c(Infant, Toddler, Preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+
+  ggplot(mapping = aes(
+    x = study_year, y = median_cc_price,
+    color = region )) +
+  geom_point(size = .8) +
+  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
+  facet_wrap(~ age_group) +
+  
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region",
+       x = "Study Year", y = "") +
+  theme_bw() +
+  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
+        axis.text.x = element_text(size = 7)
+         )
 
 ```
 
