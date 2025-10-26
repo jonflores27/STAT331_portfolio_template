@@ -508,7 +508,6 @@ person |>
 #| label: wd-7-long
 # Challenge 4
 
-#Challenge 4 Open ended analysis
 home_care <- c("family_based_infant",
                "family_based_toddler",
                "family_based_preschool")
@@ -541,12 +540,10 @@ ca_cc_table |>
   summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
   
   pivot_wider(names_from = childcare_type, 
-              values_from = `Mean Cost of Childcare`) |> 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
   
-  arrange(desc(center)) |> 
-    rename(`Mean Cost: Center Care` = center,
-           `Mean Cost: Family Care` = family)
-
+  arrange(desc(mean_cost_center))
 
 ```
 
@@ -564,6 +561,155 @@ center_care <- c("center_based_infant",
                  "center_based_toddler",
                  "center_based_preschool")
 
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+
+  pivot_longer(cols = - `California Region`, 
+               names_to = "costs") |>
+  
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center = center_care,
+                          family = home_care)) |> 
+
+  select(- costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
+  
+  arrange(desc(mean_cost_center))
+```
+
+## Reproducibility
+
+**R-1: I can create professional looking, reproducible analyses using RStudio projects, Quarto documents, and the here package.**
+
+The following assignments satisfy the above criteria:
+
+-   Example 1: Lab 2
+-   Example 2: Lab 3
+-   Example 3: Lab 4
+-   Example 4: Challenge 4
+-   Example 5 : Lab 5
+
+**R-2: I can write well documented and tidy code.**
+
+-   Example of **ggplot2** plotting
+
+```{r}
+#| label: r-2-1
+
+# Challenge 2
+ggplot(data = surveys,
+    mapping = aes(x = weight, y = species)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Horizontal Orientation",
+       x = "Weight (g)",
+       y = "Species Name") +
+  
+  theme_bw() +
+  theme(panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        axis.ticks.y = element_line(color = "white"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+
+```
+
+-   Example of **dplyr** pipeline
+
+```{r}
+#| label: r-2-2
+
+# Lab 3 Question 5
+teacher_evals_clean <- evaluations |> 
+  select(course_id, teacher_id, question_no, no_participants, resp_share,
+         SET_score_avg, percent_failed_cur, academic_degree,
+         seniority, gender) |> 
+  rename(sex = gender) |> 
+  filter(no_participants > 9) |> 
+  mutate(teacher_id = as.character(teacher_id),
+         across(
+           .cols = c(question_no, no_participants, seniority),
+           .fns = ~ as.integer(.x)
+         ))
+```
+
+-   Example of function formatting
+
+```{r}
+#| label: r-2-3
+
+# Challenge 2
+# labs and theme functiona
+ggplot(data = surveys,
+    mapping = aes(x = weight, y = species)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Horizontal Orientation",
+       x = "Weight (g)",
+       y = "Species Name") +
+  
+  theme_bw() +
+  theme(panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        axis.ticks.y = element_line(color = "white"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+```
+
+**R-3: I can write robust programs that are resistant to changes in inputs.**
+
+-   Example (any context)
+
+```{r}
+#| label: r-3-example
+
+# Lab 4 Problem 5
+# Revised to include names_prefix() this way it is resistant to change
+ca_childcare |> 
+  select(region, study_year, mhi_2018) |>
+  filter(study_year %in% c(2008, 2018)) |> 
+  group_by(region, study_year) |> 
+  summarise(median_household_income = median(mhi_2018), .groups = "drop") |> 
+  pivot_wider(names_from = study_year,
+              values_from = median_household_income,
+              names_prefix = "Median Income in ") |> 
+  arrange(desc(`Median Income in 2018`)) |> 
+  rename(`California Regions` = region)
+
+```
+
+-   Example (function stops)
+
+```{r}
+#| label: r-3-function-stops
+
+# Challenge 4
+# Revised to include names_prefix() this way it's resitant to change
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
 
 ca_cc_table |>
   filter( study_year == 2018) |> 
@@ -588,79 +734,10 @@ ca_cc_table |>
   summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
   
   pivot_wider(names_from = childcare_type, 
-              values_from = `Mean Cost of Childcare`) |> 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
   
-  arrange(desc(center)) |> 
-    rename(`Mean Cost: Center Care` = center,
-           `Mean Cost: Family Care` = family)
-
-```
-
-## Reproducibility
-
-**R-1: I can create professional looking, reproducible analyses using RStudio projects, Quarto documents, and the here package.**
-
-The following assignments satisfy the above criteria:
-
--   Example 1: Lab
--   Example 2
--   Example 3
--   Example 4
--   Example 5
-
-**R-2: I can write well documented and tidy code.**
-
--   Example of **ggplot2** plotting
-
-```{r}
-#| label: r-2-1
-
-# Challenge 2
-ggplot(data = surveys,
-    mapping = aes(x = weight, y = species)) +
-  geom_boxplot(outliers = FALSE) +
-  geom_jitter(color = "steel blue", alpha = 0.08) +
-  labs(title = "Distribution of Weight by Species Boxplot",
-       subtitle = "Horizontal Orientation",
-       x = "Weight (g)", y = "Species Name") +
-  
-  theme_bw() +
-  theme(panel.border = element_rect(color = "black", linewidth = 1),
-        plot.title = element_text(face = "bold"),
-        plot.subtitle = element_text(color = "steelblue"),
-        axis.ticks.y = element_line(color = "white"),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank())
-
-```
-
--   Example of **dplyr** pipeline
-
-```{r}
-#| label: r-2-2
-
-```
-
--   Example of function formatting
-
-```{r}
-#| label: r-2-3
-
-```
-
-**R-3: I can write robust programs that are resistant to changes in inputs.**
-
--   Example (any context)
-
-```{r}
-#| label: r-3-example
-
-```
-
--   Example (function stops)
-
-```{r}
-#| label: r-3-function-stops
+  arrange(desc(mean_cost_center))
 
 ```
 
@@ -673,12 +750,57 @@ ggplot(data = surveys,
 ```{r}
 #| label: dvs-1-num
 
+
+
 ```
 
 -   At least one numeric variable and one categorical variable
 
 ```{r}
 #| label: dvs-2-num-cat
+
+# Lab 3 Question 7
+#| layout-ncol: 2
+#| layout-align: center
+#| fig-cap: 
+#|   - "Figure 1: Distribution of Sex"
+#|   - "Figure 2: Distribution of Seniority"
+#|   - "Figure 3: Distribution of Degree Held"
+
+individuals <- teacher_evals_clean |>
+  group_by(teacher_id, sex, academic_degree, seniority) |> 
+  summarise(n = n()) |> 
+  ungroup()
+
+individuals |> 
+  group_by(sex) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = sex, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Sex", y = "Count")
+
+individuals |> 
+  group_by(seniority) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = seniority, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Seniority in Years", y = "Count")
+
+individuals |> 
+  group_by(academic_degree) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = academic_degree, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Academic Degree Held", y = "Count")
+
+individuals |> 
+  filter(academic_degree == "prof") |> 
+  group_by(seniority) |> 
+  summarise(n = n())  
+
 
 ```
 
@@ -693,6 +815,33 @@ ggplot(data = surveys,
 
 ```{r}
 #| label: dvs-2-date
+
+# Challenge 4
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = - c(`California Region`, study_year), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+  
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
+  
 
 ```
 
@@ -743,11 +892,10 @@ ca_cc_table |>
             `Center Based Preschool` = median(mc_preschool),
             `Family Based Preschool` = median(mfcc_preschool),
             .groups = "drop"  ) |> 
-    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
-                          `Center Based Preschool`, `Family Based Infant`,
-                          `Family Based Toddler`,
-                          `Family Based Preschool`), 
+  
+    pivot_longer(cols = - c(`California Region`, study_year), 
                names_to = "costs") |> 
+  
   ggplot(
     mapping = aes(x = study_year, y = value, color = costs)
     ) +
@@ -901,6 +1049,34 @@ individuals |>
 
 ```{r}
 #| label: dvs-4-summarize
+
+# Challenge 4 Open Ended Analysis
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+  
+    pivot_longer(cols = - c(`California Region`, study_year), 
+               names_to = "costs") |> 
+  
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+  
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
 
 ```
 
