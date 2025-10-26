@@ -793,8 +793,7 @@ ca_childcare |>
 
 individuals <- teacher_evals_clean |>
   group_by(teacher_id, sex, academic_degree, seniority) |> 
-  summarise(n = n()) |> 
-  ungroup()
+  summarise(n = n(), .groups = "drop")
 
 individuals |> 
   group_by(sex) |> 
@@ -820,6 +819,10 @@ individuals |>
       geom_text(aes(label = n), vjust = -0.5) +
       labs(x = "Academic Degree Held", y = "Count")
 
+individuals |> 
+  filter(academic_degree == "prof") |> 
+  group_by(seniority) |> 
+  summarise(n = n()) 
 
 ```
 
@@ -1049,8 +1052,7 @@ ca_childcare |>
 
 individuals <- teacher_evals_clean |>
   group_by(teacher_id, sex, academic_degree, seniority) |> 
-  summarise(n = n()) |> 
-  ungroup()
+  summarise(n = n(), .groups = "drop")
 
 individuals |> 
   group_by(sex) |> 
@@ -1161,12 +1163,63 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: dvs-5-1
 
+# Lab 3 Question 7
+# Grouped by multiple variable to explore demographics
+#| layout-ncol: 2
+#| layout-align: center
+#| fig-cap: 
+#|   - "Figure 1: Distribution of Sex"
+#|   - "Figure 2: Distribution of Seniority"
+#|   - "Figure 3: Distribution of Degree Held"
+
+individuals <- teacher_evals_clean |>
+  group_by(teacher_id, sex, academic_degree, seniority) |> 
+  summarise(n = n(), .groups = "drop")
+
+individuals |> 
+  group_by(sex) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = sex, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Sex", y = "Count")
+
+individuals |> 
+  group_by(seniority) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = seniority, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Seniority in Years", y = "Count")
+
+individuals |> 
+  group_by(academic_degree) |> 
+  summarise(n = n()) |> 
+  ggplot(mapping = aes(x = academic_degree, y = n)) +
+  geom_col() +
+      geom_text(aes(label = n), vjust = -0.5) +
+      labs(x = "Academic Degree Held", y = "Count")
+
+individuals |> 
+  filter(academic_degree == "prof") |> 
+  group_by(seniority) |> 
+  summarise(n = n()) 
+
 ```
 
 -   Example 2
 
 ```{r}
 #| label: dvs-5-2
+
+# Lab 3 Question 9
+teacher_evals_clean |> 
+  group_by(teacher_id, course_id) |> 
+  summarise(number_of_instances = n()) |> 
+  select(teacher_id, course_id, number_of_instances) |> 
+  ungroup() |> 
+  filter(number_of_instances == 9) |> 
+  n_distinct()
 
 ```
 
