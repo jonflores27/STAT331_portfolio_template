@@ -1292,6 +1292,24 @@ ca_cc_table |>
 ```{r}
 #| label: pe-1-one-call
 
+# Lab 5 
+# Revised formattin for clearer code
+get_fit_now_member |> 
+  left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
+  left_join(interview, by = join_by(person_id)) |> 
+  mutate(check_in_date = ymd(check_in_date)) |> 
+  filter(year(check_in_date) == 2018,
+         month(check_in_date) == 01,
+         day(check_in_date) == 09,
+         str_detect(id, pattern = "^48Z"),
+         membership_status == "gold") |> 
+  select(id,
+         name,
+         membership_status,
+         check_in_date,
+         transcript)
+
+
 ```
 
 -   using `across()`
@@ -1504,6 +1522,12 @@ chisq.test(x = teacher_evals_compare$SET_level,
 
 ```{r}
 #| label: dsm-2-2
+
+# Lab 4 Question 9
+# Linear regression model
+reg_mod1 <- lm(formula = mc_infant ~ mhi_2018,
+               data = ca_childcare)
+summary(reg_mod1)
 
 ```
 
