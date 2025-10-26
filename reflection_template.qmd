@@ -76,12 +76,7 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: wd-2-ex-2
-
-# Challenge 4, Open Ended Analysis, Table creation
-# Deleted the only column I did not need
-# revised changed from ! to - sign
-
-#| fig-cap: "Mean price of childcare base on type in 2018"
+# Challenge 4 Open ended analysis
 
 home_care <- c("family_based_infant",
                "family_based_toddler",
@@ -90,6 +85,7 @@ home_care <- c("family_based_infant",
 center_care <- c("center_based_infant",
                  "center_based_toddler",
                  "center_based_preschool")
+
 
 ca_cc_table |>
   filter( study_year == 2018) |> 
@@ -101,25 +97,24 @@ ca_cc_table |>
             center_based_preschool = median(mc_preschool),
             family_based_preschool = median(mfcc_preschool),
             .groups = "drop"  ) |> 
-  pivot_longer(cols = c(center_based_infant,
-                        center_based_toddler,
-                        center_based_preschool,
-                        family_based_infant,
-                        family_based_toddler,
-                        family_based_preschool), 
+
+  pivot_longer(cols = - `California Region`, 
                names_to = "costs") |>
+  
   mutate(childcare_type = fct_collapse(.f = costs,
                           center = center_care,
                           family = home_care)) |> 
-  
-  select(-costs) |> 
+
+  select(- costs) |> 
   group_by(`California Region`, childcare_type) |> 
   summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
   pivot_wider(names_from = childcare_type, 
               values_from = `Mean Cost of Childcare`) |> 
+  
   arrange(desc(center)) |> 
-    rename(`Mean Cost of Center Based Childcare` = center,
-           `Mean Cost of Family Based Childcare` = family)
+    rename(`Mean Cost: Center Care` = center,
+           `Mean Cost: Family Care` = family)
 
 ```
 
@@ -158,6 +153,18 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: wd-3-numeric-ex-2
 
+ca_childcare |> 
+  select(region, study_year, mhi_2018) |>
+  filter(study_year %in% c(2008, 2018)) |> 
+  group_by(region, study_year) |> 
+  summarise(median_household_income = median(mhi_2018), .groups = "drop") |> 
+  pivot_wider(names_from = study_year,
+              values_from = median_household_income) |> 
+  arrange(desc(`2018`)) |> 
+  rename(`California Regions` = region,
+         `Median Income in 2008` = `2008`,
+         `Median Income in 2018` = `2018`)
+
 ```
 
 -   Character Example 1 (any context)
@@ -166,7 +173,6 @@ teacher_evals_clean <- evaluations |>
 #| label: wd-3-character
 
 # Lab 5, Murder mystery
-# In this case I used a regular experssion "^" to make sure that the pattern that was foound started with the provide clue
 
 get_fit_now_member |> 
   left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
@@ -186,7 +192,7 @@ get_fit_now_member |>
 #| label: wd-3-string
 
 #Lab 5, Murder mystery
-# made sure that the pattern started with Annabel to account for Annabels with differetn last name
+# made sure that the pattern started with Annabel to account for Annabels with different last name
 person |> 
   filter(str_detect(name, pattern = "^Annabel") &
            address_street_name == "Franklin Ave"|
@@ -253,6 +259,44 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: wd-4-factor-ex-1
+
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+
+  pivot_longer(cols = - `California Region`, 
+               names_to = "costs") |>
+  
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center = center_care,
+                          family = home_care)) |> 
+
+  select(- costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`) |> 
+  
+  arrange(desc(center)) |> 
+    rename(`Mean Cost: Center Care` = center,
+           `Mean Cost: Family Care` = family)
 
 ```
 
@@ -415,18 +459,33 @@ person |>
 # Lab 4 Question 7
 
 
-ca_childcare |> 
-  select(region, county_name, study_year,
-         Infant = mc_infant,
-         Toddler = mc_toddler,
-         Preschool = mc_preschool) |> 
-  pivot_longer(cols = c(Infant, Toddler, Preschool),
-               names_to = "age_group",
-               values_to = "median_cc_price") |>
-  mutate(region = fct_reorder2(
-         .f = region, .x = study_year, .y = median_cc_price),
-         age_group = fct(age_group,
-                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
+                          `Center Based Preschool`, `Family Based Infant`,
+                          `Family Based Toddler`,
+                          `Family Based Preschool`), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+  labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
 
 
 ```
@@ -436,6 +495,46 @@ ca_childcare |>
 ```{r}
 #| label: wd-7-wide
 
+#Challenge 4 Open ended analysis
+
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+  pivot_longer(cols = c(center_based_infant,
+                        center_based_toddler,
+                        center_based_preschool,
+                        family_based_infant,
+                        family_based_toddler,
+                        family_based_preschool), 
+               names_to = "costs") |>
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center = center_care,
+                          family = home_care)) |> 
+  
+  select(-costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`) |> 
+  arrange(desc(center)) |> 
+    rename(`Mean Cost of Center Based Childcare` = center,
+           `Mean Cost of Family Based Childcare` = family)
+
 ```
 
 ## Reproducibility
@@ -444,7 +543,7 @@ ca_childcare |>
 
 The following assignments satisfy the above criteria:
 
--   Example 1
+-   Example 1: Lab 
 -   Example 2
 -   Example 3
 -   Example 4
@@ -737,6 +836,38 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: pe-4-1
 
+# Challenge 4 Open Ended Analysis
+# The dollar function was superseded and replaced by the label_currency() function
+
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
+                          `Center Based Preschool`, `Family Based Infant`,
+                          `Family Based Toddler`,
+                          `Family Based Preschool`), 
+               names_to = "costs") |> 
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+    labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+    scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "gray96"))
+
+
 ```
 
 -   I can connect a data wrangling pipeline into a `ggplot()`
@@ -744,35 +875,35 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: pe-4-2
 
-# Lab 4 Question 7
-ca_childcare |> 
-  select(region, county_name, study_year,
-         Infant = mc_infant,
-         Toddler = mc_toddler,
-         Preschool = mc_preschool) |> 
-  pivot_longer(cols = c(Infant, Toddler, Preschool),
-               names_to = "age_group",
-               values_to = "median_cc_price") |>
-  mutate(region = fct_reorder2(
-         .f = region, .x = study_year, .y = median_cc_price),
-         age_group = fct(age_group,
-                         levels = c("Infant", "Toddler", "Preschool"))) |> 
-
-  ggplot(mapping = aes(
-    x = study_year, y = median_cc_price,
-    color = region )) +
-  geom_point(size = .8) +
-  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
-  facet_wrap(~ age_group) +
+# Challenge 4 Open Ended Analysis
+ca_cc_table |> 
+  group_by(`California Region`, study_year) |> 
+  summarise(`Center Based Infant` = median(mc_infant),
+            `Family Based Infant` = median(mfcc_infant),
+            `Center Based Toddler` = median(mc_toddler),
+            `Family Based Toddler` = median(mfcc_toddler),
+            `Center Based Preschool` = median(mc_preschool),
+            `Family Based Preschool` = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+    pivot_longer(cols = c(`Center Based Infant`,`Center Based Toddler`,
+                          `Center Based Preschool`, `Family Based Infant`,
+                          `Family Based Toddler`,
+                          `Family Based Preschool`), 
+               names_to = "costs") |> 
   
-  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
-  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
-       color = "California Region",
-       x = "Study Year", y = "") +
+  ggplot(
+    mapping = aes(x = study_year, y = value, color = costs)
+    ) +
+    geom_jitter(alpha = 0.8 ) + 
+    facet_wrap(~ `California Region`) +
+    labs(x = "Year", y = "",
+      color = "Types of Childcare",
+      title = "Childcare Costs by Region from 2008 - 2018",
+      subtitle = "Median Cost of Childcare ($)") +
+    scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+
   theme_bw() +
-  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
-        axis.text.x = element_text(size = 7)
-         )
+  theme(panel.background = element_rect(fill = "gray96"))
 
 ```
 
