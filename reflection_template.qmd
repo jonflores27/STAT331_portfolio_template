@@ -259,7 +259,7 @@ teacher_evals_clean <- evaluations |>
   mutate(teacher_id = as.character(teacher_id),
          across(
            .cols = c(question_no, no_participants, seniority),
-           .fns = ~ as.integer(.x)
+           .fns = ~ as.integer(.x))
 
 
 ```
@@ -268,6 +268,25 @@ teacher_evals_clean <- evaluations |>
 
 ```{r}
 #| label: wd-4-numeric-ex-2
+
+# Lab 3 Question 4
+# The year was a double, that does not make sense, made it into an integer (number)
+ca_childcare <- ca_childcare |> 
+  mutate(county_name = str_remove_all(county_name, " County"),
+         county_name = as_factor(county_name),
+         study_year =as.integer(study_year),
+    region = fct_collapse(.f = county_name,
+                          `Superior California` = superior_counties,
+                          `North Coast` = north_coast_counties,
+                          `San Francisco Bay Area` = san_fran_counties,
+                          `Northern San Joaquin Valley` = n_san_joaquin_counties,
+                          `Central Coast` = central_coast_counties,
+                          `Sounthern San Joaquin Valley` = s_san_joaquin_counties,
+                          `Inland Empire` = inland_counties,
+                          `Los Angeles County` = la_county,
+                          `Orange County` = orange_county,
+                          `San Diego-Imperial` = san_diego_imperial_counties
+                          ), .before = state_name)
 
 ```
 
@@ -1028,6 +1047,24 @@ ca_childcare |>
 ```{r}
 #| label: dvs-3-1-ex-1
 
+# Challenge 2
+ggplot(data = surveys,
+    mapping = aes(x = weight, y = species)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Horizontal Orientation",
+       x = "Weight (g)",
+       y = "Species Name") +
+  
+  theme_bw() +
+  theme(panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        axis.ticks.y = element_line(color = "white"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank())
+
 ```
 
 -   I can use non-standard colors (Example 2)
@@ -1313,6 +1350,8 @@ ca_childcare <- ca_childcare |>
 
 ```{r}
 #| label: dvs-7-ex-1
+
+# non standard vs non default?
 
 ```
 
