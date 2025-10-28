@@ -1325,22 +1325,46 @@ ca_cc_table |>
 # Lab 4 Question 4
 # column made more sense to be placed before the state name
 
-ca_childcare <- ca_childcare |> 
-  mutate(county_name = str_remove_all(county_name, " County"),
-         county_name = as_factor(county_name),
-         study_year = as.integer(study_year),
-    `California Region` = fct_collapse(.f = county_name,
-                          `Superior` = superior_counties,
-                          `North Coast` = north_coast_counties,
-                          `San Francisco` = san_fran_counties,
-                          `North San Joaquin` = n_san_joaquin_counties,
-                          `Central Coast` = central_coast_counties,
-                          `Sounth San Joaquin` = s_san_joaquin_counties,
-                          `Inland Empire` = inland_counties,
-                          `Los Angeles` = la_county,
-                          `Orange` = orange_county,
-                          `San Diego-Imperial` = san_diego_imperial_counties
-                          ), .before = state_name)
+# Challenge 4 
+# revised: added _childcare to make to add context to the column names
+home_care <- c("family_based_infant",
+               "family_based_toddler",
+               "family_based_preschool")
+
+center_care <- c("center_based_infant",
+                 "center_based_toddler",
+                 "center_based_preschool")
+
+
+ca_cc_table |>
+  filter( study_year == 2018) |> 
+  group_by(`California Region`) |> 
+    summarise(center_based_infant = median(mc_infant),
+            family_based_infant = median(mfcc_infant),
+            center_based_toddler = median(mc_toddler),
+            family_based_toddler = median(mfcc_toddler),
+            center_based_preschool = median(mc_preschool),
+            family_based_preschool = median(mfcc_preschool),
+            .groups = "drop"  ) |> 
+
+  pivot_longer(cols = - `California Region`, 
+               names_to = "costs") |>
+  
+  mutate(childcare_type = fct_collapse(.f = costs,
+                          center_childcare = center_care,
+                          family_childcare = home_care)) |> 
+
+  select(- costs) |> 
+  group_by(`California Region`, childcare_type) |> 
+  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
+  
+  pivot_wider(names_from = childcare_type, 
+              values_from = `Mean Cost of Childcare`,
+              names_prefix = "mean_cost_") |> 
+  
+  arrange(
+    desc(mean_cost_center_childcare)
+    )
 
 ```
 
