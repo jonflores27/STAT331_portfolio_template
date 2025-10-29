@@ -802,56 +802,7 @@ ca_childcare |>
 ```{r}
 #| label: dvs-2-num-cat
 
-# Lab 3 Question 7
-#| layout-ncol: 2
-#| layout-align: center
-#| fig-cap: 
-#|   - "Figure 1: Distribution of Sex"
-#|   - "Figure 2: Distribution of Seniority"
-#|   - "Figure 3: Distribution of Degree Held"
-
-individuals <- teacher_evals_clean |>
-  group_by(teacher_id, sex, academic_degree, seniority) |> 
-  summarise(n = n(), .groups = "drop")
-
-individuals |> 
-  group_by(sex) |> 
-  summarise(n = n()) |> 
-  ggplot(mapping = aes(x = sex, y = n)) +
-  geom_col() +
-      geom_text(aes(label = n), vjust = -0.5) +
-      labs(x = "Sex", y = "Count")
-
-individuals |> 
-  group_by(seniority) |> 
-  summarise(n = n()) |> 
-  ggplot(mapping = aes(x = seniority, y = n)) +
-  geom_col() +
-      geom_text(aes(label = n), vjust = -0.5) +
-      labs(x = "Seniority in Years", y = "Count")
-
-individuals |> 
-  group_by(academic_degree) |> 
-  summarise(n = n()) |> 
-  ggplot(mapping = aes(x = academic_degree, y = n)) +
-  geom_col() +
-      geom_text(aes(label = n), vjust = -0.5) +
-      labs(x = "Academic Degree Held", y = "Count")
-
-individuals |> 
-  filter(academic_degree == "prof") |> 
-  group_by(seniority) |> 
-  summarise(n = n()) 
-
-```
-
--   At least two categorical variables
-
-```{r}
-#| label: dvs-2-cat
-
 # Challenge 4
-# Year and Types of childcare
 ca_cc_table |> 
   group_by(`California Region`, study_year) |> 
   summarise(`Center Based Infant` = median(mc_infant),
@@ -876,6 +827,25 @@ ca_cc_table |>
   
   theme_bw() +
   theme(panel.background = element_rect(fill = "gray96"))
+
+```
+
+-   At least two categorical variables
+
+```{r}
+#| label: dvs-2-cat
+
+# Challenge 3
+teacher_evals_compare |> 
+  ggplot(mapping = aes(x = sen_level, fill = SET_level)) +
+  geom_bar(position = "fill") +
+  scale_fill_discrete(palette = c("purple1","gold4")) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Evaluation of Teachers' Use of Activities",
+       x = "Years of Experience", y = "",
+       fill = "Evaluation Rating") + 
+  theme_bw() +
+  theme(legend.position = "top")
 
 ```
 
