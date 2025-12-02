@@ -1156,25 +1156,7 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-4-across
 
-# Lab 3 Question 5
-teacher_evals_clean <- evaluations |> 
-  select(course_id,
-         teacher_id,
-         question_no,
-         no_participants,
-         resp_share,
-         SET_score_avg,
-         percent_failed_cur,
-         academic_degree,
-         seniority,
-         gender) |> 
-  rename(sex = gender) |> 
-  filter(no_participants > 9) |> 
-  mutate(teacher_id = as.character(teacher_id),
-         across(
-           .cols = c(question_no, no_participants, seniority),
-           .fns = ~ as.integer(.x)
-         ))
+
 
 ```
 
@@ -1300,56 +1282,42 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-6-ex-2
 
+# Lab 9 Question 6
+# Bold Column Names
+
+eval_table |> 
+  gt(rowname_col = "level",
+    groupname_col = "variable",
+    row_group_as_column = TRUE) |> 
+  fmt_percent(columns = prop) |> 
+  cols_label(n = "Count of Instructors",
+             prop = "Proportion by Variable Type") |> 
+  tab_header(title = "Demographics for Instructors",
+             subtitle = "Teacher Eval Surveys") |> 
+  tab_spanner(label = "Statistics", columns = c("n", "prop")) |> 
+  tab_stubhead(label = "Demographics") |> 
+  tab_style(style = cell_text(weight = "bold"),
+            locations = cells_column_labels())
+
 ```
 
 -   I can arrange my table to have an intuitive ordering
 
 ```{r}
 #| label: dvs-6-ex-3
+# Lab 9 Question 3
+# Arranged alphabetically and by variable type
 
-# Lab 4 Question 4
-# column made more sense to be placed before the state name
-
-# Challenge 4 
-# revised: added _childcare to make to add context to the column names
-home_care <- c("family_based_infant",
-               "family_based_toddler",
-               "family_based_preschool")
-
-center_care <- c("center_based_infant",
-                 "center_based_toddler",
-                 "center_based_preschool")
-
-
-ca_cc_table |>
-  filter( study_year == 2018) |> 
-  group_by(`California Region`) |> 
-    summarise(center_based_infant = median(mc_infant),
-            family_based_infant = median(mfcc_infant),
-            center_based_toddler = median(mc_toddler),
-            family_based_toddler = median(mfcc_toddler),
-            center_based_preschool = median(mc_preschool),
-            family_based_preschool = median(mfcc_preschool),
-            .groups = "drop"  ) |> 
-
-  pivot_longer(cols = - `California Region`, 
-               names_to = "costs") |>
-  
-  mutate(childcare_type = fct_collapse(.f = costs,
-                          center_childcare = center_care,
-                          family_childcare = home_care)) |> 
-
-  select(- costs) |> 
-  group_by(`California Region`, childcare_type) |> 
-  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
-  
-  pivot_wider(names_from = childcare_type, 
-              values_from = `Mean Cost of Childcare`,
-              names_prefix = "mean_cost_") |> 
-  
-  arrange(
-    desc(mean_cost_center_childcare)
-    )
+survey_table |> 
+  arrange(by = Variable) |> 
+ gt(rowname_col = "Variable",
+    groupname_col = "Data Type",
+    row_group_as_column = TRUE) |> 
+  tab_header(title = "Data Type for Each Variable",
+             subtitle = "Rodent Information Dataset") |> 
+  tab_stubhead(label = "Variable and their Data Type") |> 
+  tab_style(style = cell_text(weight = "bold"),
+            locations = cells_stubhead()) 
 
 ```
 
@@ -1364,49 +1332,26 @@ ca_cc_table |>
 
 ```
 
--   I can modify the layout of my table to be more readable (e.g., `pivot_longer()` or `pivot_wider()`)
+-   I can modify the layout of my table to be more readable
 
 ```{r}
 #| label: dvs-7-ex-2
 
-# Challenge 4
-# Pivoted after creating a long df
-home_care <- c("family_based_infant",
-               "family_based_toddler",
-               "family_based_preschool")
+# Lab 9 Question 6
 
-center_care <- c("center_based_infant",
-                 "center_based_toddler",
-                 "center_based_preschool")
-
-
-ca_cc_table |>
-  filter( study_year == 2018) |> 
-  group_by(`California Region`) |> 
-    summarise(center_based_infant = median(mc_infant),
-            family_based_infant = median(mfcc_infant),
-            center_based_toddler = median(mc_toddler),
-            family_based_toddler = median(mfcc_toddler),
-            center_based_preschool = median(mc_preschool),
-            family_based_preschool = median(mfcc_preschool),
-            .groups = "drop"  ) |> 
-
-  pivot_longer(cols = - `California Region`, 
-               names_to = "costs") |>
-  
-  mutate(childcare_type = fct_collapse(.f = costs,
-                          center_childcare = center_care,
-                          family_childcare = home_care)) |> 
-
-  select(- costs) |> 
-  group_by(`California Region`, childcare_type) |> 
-  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
-  
-  pivot_wider(names_from = childcare_type, 
-              values_from = `Mean Cost of Childcare`,
-              names_prefix = "mean_cost_") |> 
-  
-  arrange(desc(mean_cost_center_childcare))
+eval_table |> 
+  gt(rowname_col = "level",
+    groupname_col = "variable",
+    row_group_as_column = TRUE) |> 
+  fmt_percent(columns = prop) |> 
+  cols_label(n = "Count of Instructors",
+             prop = "Proportion by Variable Type") |> 
+  tab_header(title = "Demographics for Instructors",
+             subtitle = "Teacher Eval Surveys") |> 
+  tab_spanner(label = "Statistics", columns = c("n", "prop")) |> 
+  tab_stubhead(label = "Demographics") |> 
+  tab_style(style = cell_text(weight = "bold"),
+            locations = cells_column_labels())
 
 ```
 
