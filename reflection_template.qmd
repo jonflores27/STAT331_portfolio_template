@@ -49,7 +49,7 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 #| label: wd-1-xlsx
 
 # nothing right now
-
+# excel
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
