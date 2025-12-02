@@ -697,24 +697,38 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: r-2-3
 
-# Challenge 2
-# labs and theme functions hav multiple arguments
-ggplot(data = surveys,
-    mapping = aes(x = weight, y = species)) +
-  geom_boxplot(outliers = FALSE) +
-  geom_jitter(color = "steel blue", alpha = 0.08) +
-  labs(title = "Distribution of Weight by Species Boxplot",
-       subtitle = "Horizontal Orientation",
-       x = "Weight (g)",
-       y = "Species Name") +
+# Lab 
+# plot function
+
+titlefy_mm <- function(t){
+  if(!is.character(t)){
+    stop("Argument is not a String")
+  }
+  t |> 
+    str_replace_all(pattern = "_",
+                    replacement = " ") |> 
+    str_to_title() |> 
+    str_replace_all(pattern = "Mm",
+                   replacement = "(mm)")
+}
+
+scatter_plot <- function(df, x_axis, y_axis, category){
+  t_label <- titlefy_mm(
+    rlang::englue("A Scatter Plot of {{x_axis}} and {{y_axis}}"))
+  x_label <- titlefy_mm(rlang::englue("{{x_axis}}"))
+  y_label <- titlefy_mm(rlang::englue("{{y_axis}}"))
+  c_label <- titlefy_mm(rlang::englue("{{category}}"))
   
-  theme_bw() +
-  theme(panel.border = element_rect(color = "black", linewidth = 1),
-        plot.title = element_text(face = "bold"),
-        plot.subtitle = element_text(color = "steelblue"),
-        axis.ticks.y = element_line(color = "white"),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank())
+  df |> 
+    ggplot(mapping = aes(x = {{x_axis}},
+                         y = {{y_axis}},
+                         color = {{category}})) + 
+      geom_point() +
+    labs(title = t_label,
+         x = x_label,
+         y = y_label,
+         color = c_label)
+}
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
@@ -744,44 +758,18 @@ ca_childcare |>
 ```{r}
 #| label: r-3-function-stops
 
-# Challenge 4
-# Revised to include names_prefix() this way it's resitant to change
-home_care <- c("family_based_infant",
-               "family_based_toddler",
-               "family_based_preschool")
+# Challenge 7
+condition_index <- function(w, len) {
+  if(!is.numeric(w)){
+    stop("Please provide a numeric input for the argument.")
+  }
+  (w * 100) / (len^3)
+}
 
-center_care <- c("center_based_infant",
-                 "center_based_toddler",
-                 "center_based_preschool")
-
-
-ca_cc_table |>
-  filter( study_year == 2018) |> 
-  group_by(`California Region`) |> 
-    summarise(center_based_infant = median(mc_infant),
-            family_based_infant = median(mfcc_infant),
-            center_based_toddler = median(mc_toddler),
-            family_based_toddler = median(mfcc_toddler),
-            center_based_preschool = median(mc_preschool),
-            family_based_preschool = median(mfcc_preschool),
-            .groups = "drop"  ) |> 
-
-  pivot_longer(cols = - `California Region`, 
-               names_to = "costs") |>
-  
-  mutate(childcare_type = fct_collapse(.f = costs,
-                          center = center_care,
-                          family = home_care)) |> 
-
-  select(- costs) |> 
-  group_by(`California Region`, childcare_type) |> 
-  summarise(`Mean Cost of Childcare` = mean(value), .groups = "drop") |> 
-  
-  pivot_wider(names_from = childcare_type, 
-              values_from = `Mean Cost of Childcare`,
-              names_prefix = "mean_cost_") |> 
-  
-  arrange(desc(mean_cost_center))
+fish_index <- fish |> 
+  filter(if_any(.cols = c(weight, length),
+                .fns = ~ !is.na(.x))) |>
+  mutate(condition = condition_index(weight, length))
 
 ```
 
@@ -795,11 +783,14 @@ ca_cc_table |>
 #| label: dvs-1-num
 
 # Lab 4 Question 8
+# revised so axis are scaled in $ values
+
 ca_childcare |> 
   ggplot(mapping = aes(y = mc_infant, x = mhi_2018)) +
   geom_point() +
   geom_smooth(method = lm) +
   scale_y_continuous(labels = scales::dollar) +
+  scale_x_continuous(labels = scales::dollar) +
   labs(y = "Median Weekly Price for Childcare ($) - Infant",
        x = "Median Household Income 2018 ($)") 
 ```
@@ -809,31 +800,25 @@ ca_childcare |>
 ```{r}
 #| label: dvs-2-num-cat
 
-# Challenge 4
-ca_cc_table |> 
-  group_by(`California Region`, study_year) |> 
-  summarise(`Center Based Infant` = median(mc_infant),
-            `Family Based Infant` = median(mfcc_infant),
-            `Center Based Toddler` = median(mc_toddler),
-            `Family Based Toddler` = median(mfcc_toddler),
-            `Center Based Preschool` = median(mc_preschool),
-            `Family Based Preschool` = median(mfcc_preschool),
-            .groups = "drop"  ) |> 
-    pivot_longer(cols = - c(`California Region`, study_year), 
-               names_to = "costs") |> 
-  ggplot(
-    mapping = aes(x = study_year, y = value, color = costs)
-    ) +
-    geom_jitter(alpha = 0.8 ) + 
-    facet_wrap(~ `California Region`) +
-  labs(x = "Year", y = "",
-      color = "Types of Childcare",
-      title = "Childcare Costs by Region from 2008 - 2018",
-      subtitle = "Median Cost of Childcare ($)") +
-  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
-  
+# Lab 2 Question 6
+
+ggplot(data = surveys,
+    mapping = aes(x = species, y = weight)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_jitter(color = "steel blue", alpha = 0.08) +
+  labs(title = "Distribution of Weight by Species Boxplot",
+       subtitle = "Vertical Orientation",
+       x = "Species Name",
+       y = "Weight (g)") + 
   theme_bw() +
-  theme(panel.background = element_rect(fill = "gray96"))
+  theme(axis.text.x = element_text(angle = 45),
+        axis.ticks.length.x = unit(8, "mm"),
+        axis.ticks.x = element_line(color = "white"),
+        panel.border = element_rect(color = "black", linewidth = 1),
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(color = "steelblue"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank())
 
 ```
 
@@ -842,17 +827,24 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-2-cat
 
-# Challenge 3
-teacher_evals_compare |> 
-  ggplot(mapping = aes(x = sen_level, fill = SET_level)) +
-  geom_bar(position = "fill") +
-  scale_fill_discrete(palette = c("purple1","gold4")) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(title = "Evaluation of Teachers' Use of Activities",
-       x = "Years of Experience", y = "",
-       fill = "Evaluation Rating") + 
-  theme_bw() +
-  theme(legend.position = "top")
+# Lab 7 Question 3
+fish |> 
+  mutate(trip = as.character(trip),
+         trip = case_when(trip == "1" ~ "Trip 1",
+                          trip == "2" ~ "Trip 2")) |> 
+  filter(if_any(.cols = trip:species,
+                .fns = ~ is.na(.x))) |> 
+  ggplot(mapping = aes(x = year)) +
+    geom_bar(mapping = aes(fill = section)) +
+  facet_grid(section ~ trip, axes = "all")+
+  scale_x_continuous(n.breaks = 10) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Time Distribution of Forgetting to Record Fish Weights by Trip and Site",
+       subtitle = "Number of Missing Observations",
+       x = "Observation Year",
+       y = "") +
+  theme_linedraw() +
+  theme(legend.position = "none")
 
 ```
 
@@ -861,31 +853,36 @@ teacher_evals_compare |>
 ```{r}
 #| label: dvs-2-date
 
-# Challenge 4
-ca_cc_table |> 
-  group_by(`California Region`, study_year) |> 
-  summarise(`Center Based Infant` = median(mc_infant),
-            `Family Based Infant` = median(mfcc_infant),
-            `Center Based Toddler` = median(mc_toddler),
-            `Family Based Toddler` = median(mfcc_toddler),
-            `Center Based Preschool` = median(mc_preschool),
-            `Family Based Preschool` = median(mfcc_preschool),
-            .groups = "drop"  ) |> 
-    pivot_longer(cols = - c(`California Region`, study_year), 
-               names_to = "costs") |> 
-  ggplot(
-    mapping = aes(x = study_year, y = value, color = costs)
-    ) +
-    geom_jitter(alpha = 0.8 ) + 
-    facet_wrap(~ `California Region`) +
-  labs(x = "Year", y = "",
-      color = "Types of Childcare",
-      title = "Childcare Costs by Region from 2008 - 2018",
-      subtitle = "Median Cost of Childcare ($)") +
-  scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
+# Lab 4 Question 7
+
+ca_childcare |> 
+  select(region, county_name, study_year,
+         Infant = mc_infant,
+         Toddler = mc_toddler,
+         Preschool = mc_preschool) |> 
+  pivot_longer(cols = c(Infant, Toddler, Preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("Infant", "Toddler", "Preschool"))) |> 
+
+  ggplot(mapping = aes(
+    x = study_year, y = median_cc_price,
+    color = region )) +
+  geom_point(size = .8) +
+  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
+  facet_wrap(~ age_group) +
   
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region",
+       x = "Study Year", y = "") +
   theme_bw() +
-  theme(panel.background = element_rect(fill = "gray96"))
+  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
+        axis.text.x = element_text(size = 7)
+         )
   
 
 ```
