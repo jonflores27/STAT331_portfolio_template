@@ -48,8 +48,15 @@ surveys <- read_csv(file = here::here("Week 2", "Lab 2", "surveys.csv"))
 ```{r}
 #| label: wd-1-xlsx
 
-# nothing right now
-# excel
+# Used the PA 4 example as there was no lab example of this
+
+library(readxl)
+military <- read_xlsx("gov_spending_per_capita.xlsx",
+                      sheet = "Share of Govt. spending",
+                      skip  = 7,
+                      n_max = 191,
+                      na = c("xxx", ". .", "..")
+                      )
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
@@ -955,21 +962,32 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-2-ex-4
 
-# Challenge 2 
-ggplot(data = surveys,
-    mapping = aes(x = weight, y = species)) +
-  geom_boxplot(outliers = FALSE) +
-  geom_jitter(color = "steel blue", alpha = 0.08) +
-  labs(title = "Distribution of Weight by Species Boxplot",
-       subtitle = "Horizontal Orientation",
-       x = "Weight (g)", y = "Species Name") +
-  theme_bw() +
-  theme(panel.border = element_rect(color = "black", linewidth = 1),
-        plot.title = element_text(face = "bold"),
-        plot.subtitle = element_text(color = "steelblue"),
-        axis.ticks.y = element_line(color = "white"),
+# Lab 10
+# modified the text color to implement the legend in the title
+set.seed(27)
+ci_dat |> 
+  slice_sample(n = 40) |> 
+  mutate(instance = c(1:40),
+         .before = estimate) |>
+  ggplot() +
+    geom_segment(mapping = aes(x = conf.low,
+                               xend = conf.high,
+                               y =  instance,
+                               yend = instance,
+                               color = cover)) +
+    geom_vline(xintercept = 1, linetype = "dashed") +
+  labs(title = "Confidence Interval Coverage Plot",
+       subtitle = "Intervals that <span style='color: #64b7f7;'>do contain</span> the real value are blue, 
+      those <span style='color: #33465a;'>who don't</span> are darke blue",
+       y = "",
+       x = "Conficence Interval") +
+  theme_linedraw() +
+  theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank())
+        plot.subtitle =  element_markdown(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = "none")
 
 ```
 
