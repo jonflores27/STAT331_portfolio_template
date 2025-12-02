@@ -1470,6 +1470,11 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: pe-1-map-1
 
+# Lab 9 Question 4
+
+cleaned_evals <- evaluations |>
+  map_if(.p = is_character, as.factor) |> 
+  bind_cols()
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
@@ -1502,25 +1507,7 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: pe-3-across
 
-#Lab 3 Question 5
-teacher_evals_clean <- evaluations |> 
-  select(course_id,
-         teacher_id,
-         question_no,
-         no_participants,
-         resp_share,
-         SET_score_avg,
-         percent_failed_cur,
-         academic_degree,
-         seniority,
-         gender) |> 
-  rename(sex = gender) |> 
-  filter(no_participants > 9) |> 
-  mutate(teacher_id = as.character(teacher_id),
-         across(
-           .cols = c(question_no, no_participants, seniority),
-           .fns = ~ as.integer(.x)
-         ))
+# 
 
 ```
 
