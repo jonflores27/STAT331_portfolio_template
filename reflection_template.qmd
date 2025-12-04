@@ -389,22 +389,38 @@ ca_childcare |>
 #| label: wd-4-string
 
 # Challenge 4
-ca_childcare <- ca_childcare |> 
-  mutate(county_name = str_remove_all(county_name, " County"),
-         county_name = as_factor(county_name),
-         study_year = as.integer(study_year),
-    `California Region` = fct_collapse(.f = county_name,
-                          `Superior` = superior_counties,
-                          `North Coast` = north_coast_counties,
-                          `San Francisco` = san_fran_counties,
-                          `North San Joaquin` = n_san_joaquin_counties,
-                          `Central Coast` = central_coast_counties,
-                          `Sounth San Joaquin` = s_san_joaquin_counties,
-                          `Inland Empire` = inland_counties,
-                          `Los Angeles` = la_county,
-                          `Orange` = orange_county,
-                          `San Diego-Imperial` = san_diego_imperial_counties
-                          ), .before = state_name)
+
+titlefy_mm <- function(t){
+  if(!is.character(t)){
+    stop("Argument is not a String")
+  }
+  
+  t |> 
+    str_replace_all(pattern = "_",
+                    replacement = " ") |> 
+    str_to_title() |> 
+    str_replace_all(pattern = "Mm",
+                   replacement = "(mm)")
+}
+
+scatter_plot <- function(df, x_axis, y_axis, category){
+  t_label <- titlefy_mm(
+    rlang::englue("A Scatter Plot of {{x_axis}} and {{y_axis}}"))
+  x_label <- titlefy_mm(rlang::englue("{{x_axis}}"))
+  y_label <- titlefy_mm(rlang::englue("{{y_axis}}"))
+  c_label <- titlefy_mm(rlang::englue("{{category}}"))
+  
+  df |> 
+    ggplot(mapping = aes(x = {{x_axis}},
+                         y = {{y_axis}},
+                         color = {{category}})) + 
+      geom_point() +
+    labs(title = t_label,
+         x = x_label,
+         y = y_label,
+         color = c_label)
+}
+
 ```
 
 -   Date (example must use functions from **lubridate**)
@@ -1223,7 +1239,11 @@ ca_cc_table |>
 ```{r}
 #| label: dvs-4-across
 
+# Lab 3 Question 6
 
+teacher_evals_clean |> 
+  summarise(across(.cols = c(course_id, teacher_id),
+                   .fns = ~ n_distinct(.x)))
 
 ```
 
@@ -1593,7 +1613,14 @@ pivot_table <- function(df, col, row){
 ```{r}
 #| label: pe-3-across
 
-# 
+# Lab 3 Question 8
+# if_any is equivalent to across within a filter
+
+teacher_evals_clean |> 
+  filter(
+    if_any(.cols = course_id:sex,
+           .fns = ~ is.na(.x))
+  )
 
 ```
 
@@ -1602,12 +1629,30 @@ pivot_table <- function(df, col, row){
 ```{r}
 #| label: pe-3-map-1
 
+# Lab 9 Question 2
+
+survey_table <- surveys |> 
+  map_chr(.f = ~ class(.x)) |> 
+  enframe(name = "Variable",
+          value = "Data Type") 
+  
+
+kable(survey_table)
+
 ```
 
 -   using a `map()` function with **more than one** input (e.g., `map_2()` or `pmap()`)
 
 ```{r}
 #| label: pe-3-map-2
+
+# Lab 9 Question 7
+
+fish_table <- fish |> 
+  map_int(.f = ~ sum(is.na(.x))) |> 
+  enframe(name = "Variable", value = "Number Missing")
+
+kable(fish_table)
 
 ```
 
@@ -1694,6 +1739,31 @@ ca_cc_table |>
 
 ```{r}
 #| label: dsm-1-1
+
+# Lab 10 Question 8
+
+mycifun <- function(beta0 = 2, beta1 = 1, n = 100){
+  intercept = beta0
+  slope = beta1
+  x <- runif(n = n)
+  ep <- rnorm(n = n,
+              mean = 0,
+              sd = 1)
+  y = intercept + x * slope + ep
+  
+  fake_data <- enframe(x, value = "x_value") |> 
+    left_join(enframe(y, value = "y_value"), join_by(name))
+  
+  linear_model <- lm(formula = y_value ~ x_value, data = fake_data)
+  
+  broom::tidy(linear_model, 
+            conf.int = TRUE, 
+            conf.level = 0.95) |>
+    filter(term == "x_value") |> 
+    select(estimate, conf.low, conf.high) |> 
+    mutate(cover = case_when(1 >= conf.low & 1 <= conf.high ~ 1,
+                           .default = 0))
+}
 
 ```
 
