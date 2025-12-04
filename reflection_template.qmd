@@ -1736,6 +1736,18 @@ summary(reg_mod1)
 ```{r}
 #| label: dsm-2-3
 
+# Lab 10 
+# Questions 5 and 6
+
+model <- lm(formula = y_value ~ x_value, data = fake_data)
+
+tidy_summary <- broom::tidy(model, 
+            conf.int = TRUE, 
+            conf.level = 0.95) |> 
+  filter(term == "x_value") |> 
+  select(estimate, conf.low, conf.high)
+
+tidy_summary
 ```
 
 ## Revising My Thinking
