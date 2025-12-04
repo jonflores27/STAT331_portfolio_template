@@ -917,6 +917,21 @@ ggplot(data = surveys,
 ```{r}
 #| label: dvs-2-ex-2
 
+# Lab 9 Question 8
+# Revised from lab to include magenta instead of red.
+# Google said it was a better alternative for color deficiencies
+
+fish_table |> 
+  gt() |> 
+  tab_header(title = "Number of Missing Values per Variable",
+             subtitle = "Fish Dataset") |> 
+  data_color(columns = `Number Missing`,
+             palette = c("green"),
+             method = "factor",
+             levels = c(0), 
+             na_color = "magenta"
+             )
+
 ```
 
 -   I can modify my plot titles to clearly communicate the data context
@@ -1057,6 +1072,31 @@ ggplot(data = surveys,
 ```{r}
 #| label: dvs-3-1-ex-2
 
+# Lab 7 Question 3
+# Feedback comment - post revision: I like your use of non-standard colors!
+# The combination of color and fill is hard to see in this plot.
+# I would recommend using a facet instead!
+
+#| label: visual-of-missing-values-over-time
+
+fish |> 
+  mutate(trip = as.character(trip),
+         trip = case_when(trip == "1" ~ "Trip 1",
+                          trip == "2" ~ "Trip 2")) |> 
+  filter(if_any(.cols = trip:species,
+                .fns = ~ is.na(.x))) |> 
+  ggplot(mapping = aes(x = year)) +
+    geom_bar(mapping = aes(fill = section)) +
+  facet_grid(section ~ trip, axes = "all")+
+  scale_x_continuous(n.breaks = 10) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(title = "Time Distribution of Forgetting to Record Fish Weights by Trip and Site",
+       subtitle = "Number of Missing Observations",
+       x = "Observation Year",
+       y = "") +
+  theme_linedraw() +
+  theme(legend.position = "none")
+
 ```
 
 -   I can use annotations (e.g., `geom_text()`)
@@ -1111,6 +1151,33 @@ individuals |>
 
 ```{r}
 #| label: dvs-3-3
+
+# Lab 10 Question 13
+
+set.seed(27)
+ci_dat |> 
+  slice_sample(n = 40) |> 
+  mutate(instance = c(1:40),
+         .before = estimate) |>
+  ggplot() +
+    geom_segment(mapping = aes(x = conf.low,
+                               xend = conf.high,
+                               y =  instance,
+                               yend = instance,
+                               color = cover)) +
+    geom_vline(xintercept = 1, linetype = "dashed") +
+  labs(title = "Confidence Interval Coverage Plot",
+       subtitle = "Intervals that <span style='color: #64b7f7;'>do contain</span> the real value are blue, 
+      those <span style='color: #33465a;'>who don't</span> are darke blue",
+       y = "",
+       x = "Conficence Interval") +
+  theme_linedraw() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        plot.subtitle =  element_markdown(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = "none")
 
 ```
 
