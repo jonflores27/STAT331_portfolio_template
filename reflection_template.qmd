@@ -919,7 +919,7 @@ ggplot(data = surveys,
 
 # Lab 9 Question 8
 # Revised from lab to include magenta instead of red.
-# Google said it was a better alternative for color deficiencies
+# Google said it was a better alternative for color deficiencies.
 
 fish_table |> 
   gt() |> 
@@ -1395,7 +1395,20 @@ survey_table |>
 ```{r}
 #| label: dvs-7-ex-1
 
-# non standard vs non default?
+# Lab 9 Question 8
+# Revised from lab to include magenta instead of red.
+# Google said it was a better alternative for color deficiencies.
+
+fish_table |> 
+  gt() |> 
+  tab_header(title = "Number of Missing Values per Variable",
+             subtitle = "Fish Dataset") |> 
+  data_color(columns = `Number Missing`,
+             palette = c("green"),
+             method = "factor",
+             levels = c(0), 
+             na_color = "magenta"
+             )
 
 ```
 
@@ -1496,6 +1509,23 @@ cleaned_evals <- evaluations |>
 ```{r}
 #| label: pe-2-1
 
+# Challenge 7 Question 2
+
+condition_index <- function(w, len) {
+  if(!is.numeric(w)){
+    stop("Please provide a numeric input for the argument.")
+  }
+  (w * 100) / (len^3)
+}
+
+fish_index <- fish |> 
+  
+  filter(if_any(.cols = c(weight, length),
+                .fns = ~ !is.na(.x))) |>
+  mutate(condition = condition_index(weight, length))
+
+head(fish_index)
+
 ```
 
 -   Example 2: Function that operates on data frames
@@ -1503,12 +1533,56 @@ cleaned_evals <- evaluations |>
 ```{r}
 #| label: pe-2-2
 
+# Lab 8 Question 3
+titlefy_mm <- function(t){
+  if(!is.character(t)){
+    stop("Argument is not a String")
+  }
+  
+  t |> 
+    str_replace_all(pattern = "_",
+                    replacement = " ") |> 
+    str_to_title() |> 
+    str_replace_all(pattern = "Mm",
+                   replacement = "(mm)")
+}
+
+scatter_plot <- function(df, x_axis, y_axis, category){
+  t_label <- titlefy_mm(
+    rlang::englue("A Scatter Plot of {{x_axis}} and {{y_axis}}"))
+  x_label <- titlefy_mm(rlang::englue("{{x_axis}}"))
+  y_label <- titlefy_mm(rlang::englue("{{y_axis}}"))
+  c_label <- titlefy_mm(rlang::englue("{{category}}"))
+  
+  df |> 
+    ggplot(mapping = aes(x = {{x_axis}},
+                         y = {{y_axis}},
+                         color = {{category}})) + 
+      geom_point() +
+    labs(title = t_label,
+         x = x_label,
+         y = y_label,
+         color = c_label)
+}
+
 ```
 
 -   Example 3: Function that operates on vectors *or* data frames
 
 ```{r}
 #| label: pe-2-3
+
+# Lab 8 Question 2
+
+pivot_table <- function(df, col, row){
+  df |>
+    count({{col}}, {{row}}) |>
+    pivot_wider(names_from = {{col}},
+                values_from = n,
+                values_fill = 0) |> 
+    janitor::adorn_totals()
+    
+}
 
 ```
 
