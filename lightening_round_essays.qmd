@@ -6,12 +6,20 @@ editor: visual
 
 **Answer each of the following questions with *one sentence* including a brief explanation.**
 
-1.  Finish the sentence with another student’s name: "If \[Name of Student\] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
+1.  Finish the sentence with another student’s name: "If Erica Geam doesn’t earn an A, then nobody should, because of her dedication to learning the material. I was able to work with her for two practice activities and she was on top of things. She made connections that demonstrated she was very knowledgeable with her coding skills. She also asked a lot of questions. I took this as a sign that she truly wants to understand the material and make sure that she is doing her work right. I think she meets the requirements for an A in those areas. During the portfolio parties, she also asked a lot of questions which shows that she is double checking all possible requirements and making sure she meets the leaning goals for an A as well."
 
 2.  What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
 
+    The most difficult part of this class for me was the section on factors. A lot of the topics that we covered in this class I had already seen before, through python. However, factors were something new and with any new things there is always some confusion at first.
+
 3.  What was the easiest part of the class for you? Explain why.
+
+    To me, the easiest part of this class was learning. I really appreciated the grading format used. The end goal of allowing students to learn the material by removing some of the pressure to perform is very helpful. I was more comfortable, and in my opinion, better able to retain the material.
 
 4.  What part of the class surprised or interested you the most? Explain why.
 
+    I really liked the simulation topic in lab 10. I think this side of statistics is fascinating. I took a course on simulation, and prior to that I was skeptical of the ability of statistics to model human behavior. I was sure that that kind of stuff was too random for math to model it. However, the course project had me mapping a statistical distribution to some data I collected and it fit perfectly and I was mind-blown.
+
 5.  Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+
+    I would tell them to make sure they learn the material and they don't just do assignments for credit. Investing some time as you learn this really helps later in the class when the topics come together. R is also an interesting skill to have.
