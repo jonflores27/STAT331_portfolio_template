@@ -26,6 +26,7 @@ code-tools: true
 
 #Lab 3 Question 2
 evaluations <- read_csv(file = here::here("Week3", "Lab3", "teacher_evals.csv"))
+
 ```
 
 -   `csv` Example 2
@@ -57,6 +58,7 @@ military <- read_xlsx("gov_spending_per_capita.xlsx",
                       n_max = 191,
                       na = c("xxx", ". .", "..")
                       )
+
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
@@ -68,6 +70,7 @@ military <- read_xlsx("gov_spending_per_capita.xlsx",
 
 #Lab 3 Question 5
 #Select cols
+
 teacher_evals_clean <- evaluations |> 
   select(course_id,
          teacher_id,
@@ -87,13 +90,13 @@ teacher_evals_clean <- evaluations |>
            .fns = ~ as.integer(.x)
          ))
 
-
 ```
 
 -   Example removing specified columns
 
 ```{r}
 #| label: wd-2-ex-2
+
 # Challenge 4 Open ended analysis
 
 home_care <- c("family_based_infant",
@@ -103,7 +106,6 @@ home_care <- c("family_based_infant",
 center_care <- c("center_based_infant",
                  "center_based_toddler",
                  "center_based_preschool")
-
 
 ca_cc_table |>
   filter( study_year == 2018) |> 
@@ -204,6 +206,7 @@ teacher_evals_clean <- evaluations |>
 #| label: wd-3-numeric-ex-2
 
 # Lab 4 Question 6
+
 ca_childcare |> 
   select(region, study_year, mhi_2018) |>
   filter(study_year %in% c(2008, 2018)) |> 
@@ -255,13 +258,13 @@ person |>
   left_join(interview, by = join_by(id == person_id)) |> 
   select(name, address_number, address_street_name, transcript)
 
-
 ```
 
 -   Date (example must use functions from **lubridate**)
 
 ```{r}
 #| label: wd-3-date
+
 # Lab 5 Murder Mystery
 # revised to create a date column, it makes it easier to filter for dates
 
@@ -329,6 +332,7 @@ head(fish_index)
 #| label: wd-4-factor-ex-1
 
 # Challenge 4 
+
 home_care <- c("family_based_infant",
                "family_based_toddler",
                "family_based_preschool")
@@ -377,6 +381,7 @@ ca_cc_table |>
 # Lab 4 Question 7
 # originally the facets were in alphbetical order.
 # I wanted a specific order so I created factors to reorder the levels of the facets.
+
 ca_childcare |> 
   select(region, county_name, study_year,
          Infant = mc_infant,
@@ -405,7 +410,6 @@ ca_childcare |>
   theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
         axis.text.x = element_text(size = 7)
          )
-
 
 ```
 
@@ -454,7 +458,8 @@ scatter_plot <- function(df, x_axis, y_axis, category){
 ```{r}
 #| label: wd-4-date
 
-# Lab 5
+# Lab 5, Murder Mystery
+
 get_fit_now_member |> 
   left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
   left_join(interview, by = join_by(person_id)) |> 
@@ -476,10 +481,10 @@ get_fit_now_member |>
 #| label: wd-5-left-ex-1
 
 #Lab 4 Question 3
+
 ca_childcare <- ca_childcare |> 
   left_join(y = tax_rev,
             by = join_by(county_name == entity_name, study_year == year))
-
 
 ```
 
@@ -492,6 +497,7 @@ ca_childcare <- ca_childcare |>
 # revised to make a right join
 # good idea as this gives the resulting data set only entries
 # that exist in the interview data base which is what we care about here
+
 person |> 
   right_join(interview, by = join_by(id == person_id)) |> 
   left_join(get_fit_now_member, by = join_by(id == person_id)) |> 
@@ -508,6 +514,7 @@ person |>
 #| label: wd-5-left-right-ex-2
 
 #Lab 5, Murder mystery
+
 person |> 
   filter(str_detect(name, pattern = "^Annabel") &
            address_street_name == "Franklin Ave"|
@@ -515,7 +522,6 @@ person |>
            address_number == max(address_number)) |> 
   left_join(interview, by = join_by(id == person_id)) |> 
   select(name, address_number, address_street_name, transcript)
-
 
 ```
 
@@ -576,7 +582,8 @@ person |>
 # This step is checking the other lead after we had already found the suspect
 # The result includes both the suspect's interview and the second witness' interview
 # This confirms and covers all leads
-# Filtering joins help vizualize the data better
+# Filtering joins are not actual joins they just keep or drop whatever is
+# in the dataframe being joined to the original.
 
 working_out_jan9 <- get_fit_now_check_in |> 
   filter(check_in_date == 20180109)
@@ -596,7 +603,8 @@ interview |>
 
 # Lab 5
 # Revised to include anti joins
-# Works similar to a semi join, differetn way of vizualizinf how a filter works
+# Works the opposite waya semi join does,
+# different way of vizualizing how a filter works.
 
 anti_northwestern <- person |> 
   filter(address_street_name != "Northwestern Dr")
@@ -614,7 +622,6 @@ person_2 <- person |>
 
 statements <- bind_rows(person_1, person_2)
 
-
 interview |> 
   semi_join(statements, join_by(person_id == id))
 
@@ -626,6 +633,7 @@ interview |>
 
 ```{r}
 #| label: wd-7-long
+
 # Challenge 4
 
 home_care <- c("family_based_infant",
@@ -664,6 +672,7 @@ ca_cc_table |>
               names_prefix = "mean_cost_") |> 
   
   arrange(desc(mean_cost_center))
+
 ```
 
 -   `pivot_wider()`
@@ -707,6 +716,7 @@ ca_cc_table |>
               names_prefix = "mean_cost_") |> 
   
   arrange(desc(mean_cost_center))
+
 ```
 
 ## Reproducibility
@@ -729,6 +739,7 @@ The following assignments satisfy the above criteria:
 #| label: r-2-1
 
 # Challenge 2
+
 ggplot(data = surveys,
     mapping = aes(x = weight, y = species)) +
   geom_boxplot(outliers = FALSE) +
@@ -759,6 +770,7 @@ ggplot(data = surveys,
 # is that you put newlines on commas somewhat inconsistently". 
 # I made it so 2 col names per row was consistent, I think that's clear
 # and uncluttered
+
 teacher_evals_clean <- evaluations |> 
   select(course_id, teacher_id,
          question_no, no_participants,
@@ -779,7 +791,7 @@ teacher_evals_clean <- evaluations |>
 ```{r}
 #| label: r-2-3
 
-# Lab 
+# Lab 8 Question 3
 # plot function
 
 titlefy_mm <- function(t){
@@ -811,6 +823,7 @@ scatter_plot <- function(df, x_axis, y_axis, category){
          y = y_label,
          color = c_label)
 }
+
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
@@ -822,6 +835,7 @@ scatter_plot <- function(df, x_axis, y_axis, category){
 
 # Lab 4 Problem 5
 # Revised to include names_prefix() this way it is resistant to change
+
 ca_childcare |> 
   select(region, study_year, mhi_2018) |>
   filter(study_year %in% c(2008, 2018)) |> 
@@ -840,7 +854,8 @@ ca_childcare |>
 ```{r}
 #| label: r-3-function-stops
 
-# Challenge 7
+# Challenge 7 Question 4
+
 condition_index <- function(w, len) {
   if(!is.numeric(w)){
     stop("Please provide a numeric input for the argument.")
@@ -874,7 +889,8 @@ ca_childcare |>
   scale_y_continuous(labels = scales::dollar) +
   scale_x_continuous(labels = scales::dollar) +
   labs(y = "Median Weekly Price for Childcare ($) - Infant",
-       x = "Median Household Income 2018 ($)") 
+       x = "Median Household Income 2018 ($)")
+
 ```
 
 -   At least one numeric variable and one categorical variable
@@ -910,6 +926,7 @@ ggplot(data = surveys,
 #| label: dvs-2-cat
 
 # Lab 7 Question 3
+
 fish |> 
   mutate(trip = as.character(trip),
          trip = case_when(trip == "1" ~ "Trip 1",
@@ -965,7 +982,6 @@ ca_childcare |>
   theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
         axis.text.x = element_text(size = 7)
          )
-  
 
 ```
 
@@ -977,6 +993,7 @@ ca_childcare |>
 #| label: dvs-2-ex-1
 
 # Challenge 2 
+
 ggplot(data = surveys,
     mapping = aes(x = weight, y = species)) +
   geom_boxplot(outliers = FALSE) +
@@ -1022,6 +1039,7 @@ fish_table |>
 #| label: dvs-2-ex-3
 
 # Challenge 4
+
 ca_cc_table |> 
   group_by(`California Region`, study_year) |> 
   summarise(`Center Based Infant` = median(mc_infant),
@@ -1058,6 +1076,7 @@ ca_cc_table |>
 
 # Lab 10
 # modified the text color to implement the legend in the title
+
 set.seed(27)
 ci_dat |> 
   slice_sample(n = 40) |> 
@@ -1091,6 +1110,7 @@ ci_dat |>
 #| label: dvs-2-ex-5
 
 # Lab 4 Question 7
+
 ca_childcare |> 
   select(region, county_name, study_year,
          Infant = mc_infant,
@@ -1187,6 +1207,7 @@ fish |>
 #| label: dvs-3-2
 
 # Lab 3 Question 7
+
 #| layout-ncol: 2
 #| layout-align: center
 #| fig-cap: 
@@ -1271,6 +1292,7 @@ ci_dat |>
 #| label: dvs-4-summarize
 
 # Challenge 4 Open Ended Analysis
+
 ca_cc_table |> 
   group_by(`California Region`, study_year) |> 
   summarise(`Center Based Infant` = median(mc_infant),
@@ -1294,7 +1316,6 @@ ca_cc_table |>
       title = "Childcare Costs by Region from 2008 - 2018",
       subtitle = "Median Cost of Childcare ($)") +
   scale_y_continuous(labels = scales::label_currency(prefix = "$")) +
-  
   theme_bw() +
   theme(panel.background = element_rect(fill = "gray96"))
 
@@ -1322,6 +1343,7 @@ teacher_evals_clean |>
 
 # Lab 3 Question 7
 # Grouped by multiple variable to explore demographics
+
 #| layout-ncol: 2
 #| layout-align: center
 #| fig-cap: 
@@ -1370,6 +1392,7 @@ individuals |>
 #| label: dvs-5-2
 
 # Lab 3 Question 9
+
 teacher_evals_clean |> 
   group_by(teacher_id, course_id) |> 
   summarise(number_of_instances = n()) |> 
@@ -1389,6 +1412,7 @@ teacher_evals_clean |>
 
 # Challenge 4 
 # revised: added _childcare to make to add context to the column names
+
 home_care <- c("family_based_infant",
                "family_based_toddler",
                "family_based_preschool")
@@ -1458,6 +1482,7 @@ eval_table |>
 
 ```{r}
 #| label: dvs-6-ex-3
+
 # Lab 9 Question 3
 # Arranged alphabetically and by variable type
 
@@ -1532,6 +1557,7 @@ eval_table |>
 
 # Lab 5 
 # Revised formatting for clearer code
+
 get_fit_now_member |> 
   left_join(get_fit_now_check_in, by = join_by(id == membership_id)) |> 
   left_join(interview, by = join_by(person_id)) |> 
@@ -1556,6 +1582,7 @@ get_fit_now_member |>
 #| label: pe-1-across
 
 #Lab 3 Question 5
+
 teacher_evals_clean <- evaluations |> 
   select(course_id,
          teacher_id,
@@ -1574,6 +1601,7 @@ teacher_evals_clean <- evaluations |>
            .cols = c(question_no, no_participants, seniority),
            .fns = ~ as.integer(.x)
          ))
+
 ```
 
 -   using functions from the `map()` family
@@ -1586,6 +1614,7 @@ teacher_evals_clean <- evaluations |>
 cleaned_evals <- evaluations |>
   map_if(.p = is_character, as.factor) |> 
   bind_cols()
+
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
@@ -1620,6 +1649,7 @@ head(fish_index)
 #| label: pe-2-2
 
 # Lab 8 Question 3
+
 titlefy_mm <- function(t){
   if(!is.character(t)){
     stop("Argument is not a String")
@@ -1709,7 +1739,6 @@ survey_table <- surveys |>
   map_chr(.f = ~ class(.x)) |> 
   enframe(name = "Variable",
           value = "Data Type") 
-  
 
 kable(survey_table)
 
@@ -1767,7 +1796,6 @@ ca_cc_table |>
   theme_bw() +
   theme(panel.background = element_rect(fill = "gray96"))
 
-
 ```
 
 -   I can connect a data wrangling pipeline into a `ggplot()`
@@ -1776,6 +1804,7 @@ ca_cc_table |>
 #| label: pe-4-2
 
 # Challenge 4 Open Ended Analysis
+
 ca_cc_table |> 
   group_by(`California Region`, study_year) |> 
   summarise(`Center Based Infant` = median(mc_infant),
@@ -1816,7 +1845,6 @@ ca_cc_table |>
 
 # Lab 10 Question 8
 
-
 mycifun <- function(beta0 = 2, beta1 = 1, n = 100){
   intercept = beta0
   slope = beta1
@@ -1856,6 +1884,7 @@ ci_dat <- map(.x = 1:1000,
 #| label: dsm-1-2
 
 # Lab 10 Question 1
+
 randomBabies <- function(n_babies){
   baby_data <- tibble(baby = 1:n_babies,
                       house = sample(1:n_babies,
@@ -1863,7 +1892,6 @@ randomBabies <- function(n_babies){
   baby_data |> 
     filter(baby == house) |> 
     nrow()
-  
 }
 
 set.seed(27)
@@ -1883,6 +1911,7 @@ results <- map_int(.x = 1:10000,
 
 #Challenge 3 Question 3
 #Chi squared test
+
 chisq.test(x = teacher_evals_compare$SET_level,
            y = teacher_evals_compare$sen_level)
 
@@ -1895,6 +1924,7 @@ chisq.test(x = teacher_evals_compare$SET_level,
 
 # Lab 4 Question 9
 # Linear regression model
+
 reg_mod1 <- lm(formula = mc_infant ~ mhi_2018,
                data = ca_childcare)
 summary(reg_mod1)
@@ -1918,6 +1948,7 @@ tidy_summary <- broom::tidy(model,
   select(estimate, conf.low, conf.high)
 
 tidy_summary
+
 ```
 
 ## Revising My Thinking
