@@ -571,12 +571,52 @@ person |>
 ```{r}
 #| label: wd-6-semi
 
+# Lab 5
+# Revised to include an semi join.
+# This step is checking the other lead after we had already found the suspect
+# The result includes both the suspect's interview and the second witness' interview
+# This confirms and covers all leads
+# Filtering joins help vizualize the data better
+
+working_out_jan9 <- get_fit_now_check_in |> 
+  filter(check_in_date == 20180109)
+
+gym_goers <- get_fit_now_member |> 
+  semi_join(working_out_jan9, by = join_by(id == membership_id))
+
+interview |> 
+  semi_join(gym_goers, by = join_by(person_id))
+
 ```
 
 -   `anti_join()`
 
 ```{r}
 #| label: wd-6-anti
+
+# Lab 5
+# Revised to include anti joins
+# Works similar to a semi join, differetn way of vizualizinf how a filter works
+
+anti_northwestern <- person |> 
+  filter(address_street_name != "Northwestern Dr")
+
+person_1 <- person |> 
+  anti_join(anti_northwestern, by = join_by(id)) |> 
+  filter(address_number == max(address_number))
+
+no_franklin_folk <- person |> 
+  filter(address_street_name != "Franklin Ave")
+
+person_2 <- person |> 
+  anti_join(no_franklin_folk, by = join_by(id)) |> 
+  filter(str_detect(name, pattern = "^Annabel"))
+
+statements <- bind_rows(person_1, person_2)
+
+
+interview |> 
+  semi_join(statements, join_by(person_id == id))
 
 ```
 
