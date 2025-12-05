@@ -11,7 +11,7 @@ execute:
 code-tools: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B - .
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an B + .
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -140,6 +140,38 @@ ca_cc_table |>
 
 ```{r}
 #| label: wd-2-ex-3
+
+# Lab 4 Question 7
+# Revised to include starts with
+# This makes the titles of the facets into mc_xx
+# instead of the nice labels I had
+
+ca_childcare |> 
+  select(region, county_name, study_year,
+         starts_with("mc_")) |> 
+  pivot_longer(cols = c(mc_infant, mc_toddler, mc_preschool),
+               names_to = "age_group",
+               values_to = "median_cc_price") |>
+  mutate(region = fct_reorder2(
+         .f = region, .x = study_year, .y = median_cc_price),
+         age_group = fct(age_group,
+                         levels = c("mc_infant", "mc_toddler", "mc_preschool"))) |> 
+
+  ggplot(mapping = aes(
+    x = study_year, y = median_cc_price,
+    color = region )) +
+  geom_point(size = .8) +
+  geom_smooth(method = loess, alpha = 0.2, linewidth = .6) +
+  facet_wrap(~ age_group) +
+  
+  scale_x_continuous(breaks = seq(2008, 2018, 2)) +
+  labs(title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region",
+       x = "Study Year", y = "") +
+  theme_bw() +
+  theme(panel.spacing = unit(.5, "cm"), aspect.ratio = 1,
+        axis.text.x = element_text(size = 7)
+         )
 
 ```
 
@@ -1744,6 +1776,7 @@ ca_cc_table |>
 
 # Lab 10 Question 8
 
+
 mycifun <- function(beta0 = 2, beta1 = 1, n = 100){
   intercept = beta0
   slope = beta1
@@ -1767,12 +1800,37 @@ mycifun <- function(beta0 = 2, beta1 = 1, n = 100){
                            .default = 0))
 }
 
+set.seed(27)
+
+ci_dat <- map(.x = 1:1000,
+              .f = ~ mycifun(beta0 = 3,
+                             beta1 = .5,
+                             n = 100)
+              )
+
 ```
 
 -   Example 2
 
 ```{r}
 #| label: dsm-1-2
+
+# Lab 10 Question 1
+randomBabies <- function(n_babies){
+  baby_data <- tibble(baby = 1:n_babies,
+                      house = sample(1:n_babies,
+                                     size = n_babies))
+  baby_data |> 
+    filter(baby == house) |> 
+    nrow()
+  
+}
+
+set.seed(27)
+
+results <- map_int(.x = 1:10000,
+                   .f = ~ randomBabies(n_babies = 4)
+                  )
 
 ```
 
