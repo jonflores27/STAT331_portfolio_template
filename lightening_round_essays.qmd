@@ -6,7 +6,7 @@ editor: visual
 
 **Answer each of the following questions with *one sentence* including a brief explanation.**
 
-1.  Finish the sentence with another student’s name: "If Erica Geam doesn’t earn an A, then nobody should, because of her dedication to learning the material. I was able to work with her for two practice activities and she was on top of things. She made connections that demonstrated she was very knowledgeable with her coding skills. She also asked a lot of questions. I took this as a sign that she truly wants to understand the material and make sure that she is doing her work right. I think she meets the requirements for an A in those areas. During the portfolio parties, she also asked a lot of questions which shows that she is double checking all possible requirements and making sure she meets the leaning goals for an A as well."
+1.  Finish the sentence with another student’s name: "If Erica Geam doesn’t earn an A, then nobody should, because of her dedication to learning the material. I was able to work with her for two practice activities and she was on top of things. She made connections that demonstrated she was very knowledgeable with her coding skills. She also asked a lot of questions. I took this as a sign that she truly wants to understand the material and make sure that she is doing her work right. I think she meets the requirements for an A in those areas.
 
 2.  What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
 
@@ -14,7 +14,7 @@ editor: visual
 
 3.  What was the easiest part of the class for you? Explain why.
 
-    To me, the easiest part of this class was learning. I really appreciated the grading format used. The end goal of allowing students to learn the material by removing some of the pressure to perform is very helpful. I was more comfortable, and in my opinion, better able to retain the material.
+    One part that I found surprisingly straightforward was the section on functions. There were parts that were tougher to understand but overall, I found it kind of easy. I think part of the reason I thought this was easy was because I found the strategies provided in class to make the functions to work well for me. Making the inside work before turning it into a function was helpful.
 
 4.  What part of the class surprised or interested you the most? Explain why.
 
