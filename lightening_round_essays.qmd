@@ -14,7 +14,7 @@ editor: visual
 
 3.  What was the easiest part of the class for you? Explain why.
 
-    One part that I found surprisingly straightforward was the section on functions. There were parts that were tougher to understand but overall, I found it kind of easy. I think part of the reason I thought this was easy was because I found the strategies provided in class to make the functions to work well for me. Making the inside work before turning it into a function was helpful.
+    One part that I found surprisingly straightforward was the section on functions. There were parts of it that were tougher to understand, but overall, I found it kind of easy. I think part of the reason I thought this was easy was because I found the strategies provided in class for function creation to work well for me. Making the inside work before turning it into a function was helpful.
 
 4.  What part of the class surprised or interested you the most? Explain why.
 
